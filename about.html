@@ -1,0 +1,198 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Little Library</title>
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.css" />
+<script type="text/javascript" src="json2.js"></script>
+<script type="text/javascript" src="sha1.js"></script>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="jquery.couch.js"></script>
+<script type="text/javascript" src="jquery.form.js"></script>
+<script type="text/javascript" src="jquery.couchapp.js"></script>
+<script type="text/javascript" src="jqm.js"></script>
+<script type="text/javascript" src="library.js"></script>
+</head>
+<body>
+<div data-role="page" id="about">
+	<div data-role="header" data-theme="b">
+    	<a href="index.html" rel="external" data-rel="back" data-role="button" data-icon="arrow-l" class="backBtn">Back</a>
+    	<h1>About</h1>               
+        <div class="ui-btn-right">
+        	<a href="index.html" rel="external" data-role="button" data-icon="home" data-iconpos="notext" class="homeBtn">Home</a>
+        </div>
+    </div>
+    
+  
+	<div data-role="content" class="content">
+        
+        <script type="text/javascript">
+        	$('div#about').live("pageshow", function() { 
+			
+				$('.passwordChange').text(libLang.changePass);
+				$('label.oldPass').text(libLang.oldPass);
+				$('label.newPass').text(libLang.newPass);
+				$('.onlineLib').text(libLang.onlineLib);
+				$('.logout span.ui-btn-inner').text(libLang.logout);
+				$('.passwordForm span.ui-btn-inner').text(libLang.changePass);
+				$('h1').text(libLang.about);
+				
+				// Show current size of library
+				$.getJSON(currentHost +'/library', function(dbInfo){
+					netTotal = dbInfo.disk_size / maxDBSize; 
+					total = Math.round(netTotal * 100);
+					spaceUsed = Math.round(dbInfo.disk_size / 1000000);
+					spaceUsedTwo = spaceUsed * 2;
+					
+					if (spaceUsedTwo <= 10){
+						spaceUsedTwo = 10;	
+					}
+					
+					$('div.content').prepend('<p><strong>'+ libLang.totalSize +':</strong> <span style="border: 1px solid #225377; height: 20px; width: 200px; padding: 6px; text-align: right; display: inline-block; position: relative;border-radius: 6px; z-index: 1; overflow: hidden; -webkit-box-shadow: inset 0px 0px 6px #aaa;">'+ spaceUsed +'MB<span style="border-radius: 6px;background: #bbb; display: block; position: absolute; top: 0px; height: 32px; right: 0px;width: '+ spaceUsedTwo +'px;z-index: -1;"> </span></span> ('+ total + libLang.limit +')</p>');
+				});
+				
+				
+			
+				// Get username, online library URL, etc.
+				$.getJSON(currentHost +'/_users/org.couchdb.user%3A'+ homeUser, function(userInfo){
+					$('form.aboutForm p.logout').prepend('<strong>'+ libLang.loggedInAs +':</strong> &nbsp; '+ homeUser +' ');
+					// If an onlineDB exists, list the URLs
+					if (userInfo.onlineDB == homeURL && onlineBase == window.location.host){
+						$('div.content').append('<p>'+ libLang.thisIsOnline +'</p>');
+					}
+					else if (userInfo.onlineDB != "" && userInfo.onlineDB != null && window.location.host != '127.0.0.1'){
+						$('div.content').append('<p><strong>'+ libLang.URLToSync +':</strong> &nbsp; http://'+ onlineBase +'/'+ userInfo.onlineDB +' </p>');
+						
+						$('div.content').append('<p><a href="http://'+ onlineBase +'/'+ userInfo.onlineDB +'/_design/library/index.html" data-role="button" data-inline="true">'+ libLang.visitOnline +'</a></p>');
+						
+						$('form.passwordForm').append(' <a href="http://'+ onlineBase +'/'+ userInfo.onlineDB +'/_design/library/index.html" data-role="button" data-inline="true">'+ libLang.changeOnlinePass +' &gt;&gt;</a>');
+					
+					}
+					else {
+						$('div.content').append('<p style="color: red">'+ libLang.noOnlineLib +'</p>');
+					};
+					
+					
+					// Set new password
+					$('input.passwordChange').live('click', function(event){
+						
+						event.preventDefault();
+						
+						password = $('input#newPassword').val();
+						oldPassword = $('input#oldPassword').val();
+						onlineDB = userInfo.onlineDB;
+						saltEnc = $.couch.newUUID();
+						passwordEnc = hex_sha1(password + saltEnc);
+						couchUserUn = "org.couchdb.user:"+ homeUser;
+						onlineCouchUserUn = "org.couchdb.user:"+ onlineDB;
+						couchUser = "org.couchdb.user%3A"+ onlineDB;
+						currentRev = userInfo._rev;
+						secureOnlineDB = 'https://bob1:rochelle@'+ onlineBase;
+						
+						if(password = ""){
+							alert(libLang.validPassword);
+							return;	
+						}
+						
+						// Save new password locally
+						$.couch.db("_users").saveDoc({
+							"_id": couchUserUn,
+							"_rev":currentRev, 
+							"name":homeUser,
+							"onlineDB":onlineDB, 
+							"password_sha":passwordEnc,
+							"salt":saltEnc,
+							"type":"user",
+							"roles":[]
+							}, {
+							success: function() { 
+								
+								// If there is no online library set up, indicate success
+								if(onlineDB == "" || !onlineDB){
+									alert(libLang.saved);
+								}
+								else{
+								
+									// Get online user info
+									onlineUserURL = 'http://'+ onlineBase +'/_users/org.couchdb.user%3A'+ onlineDB;
+									$.ajax({
+										url: onlineUserURL,
+										dataType: 'jsonp',
+										error: function(){
+											alert(libLang.noSyncOnline);	
+										},
+										success: function(onlineUserInfo){
+									
+											onlineCurrentRev = onlineUserInfo._rev;
+											
+											// Save new password online
+											$.ajax({
+												url: secureOnlineDB +"/_users/"+ couchUser,
+												type: 'POST',
+												beforeSend: function( xhr ) {
+													xhr.overrideMimeType( 'Script; charset=x-user-defined' );
+												},
+												dataType:"jsonp",
+												data: {
+													"_id": onlineCouchUserUn,
+													"_rev":onlineCurrentRev, 
+													"name":onlineDB,
+													"onlineDB":onlineDB, 
+													"password_sha":passwordEnc,
+													"salt":saltEnc,
+													"type":"user",
+													"roles":[]
+												},
+												success: function(){
+													alert(libLang.saved);
+												}
+											});
+										 }
+									});
+								}
+							}
+						});
+					});
+				});
+				
+				
+				
+				// Logout
+				$('input.logout').live('click', function(event){
+					event.preventDefault();
+					
+					$.couch.logout({success: function(){
+							window.location.replace("login.html");
+						
+						}
+					});
+				});
+			});
+			
+        </script>
+        
+        <form class="aboutForm" method="post" action="" enctype="multipart/form-data">
+            <p class="logout"><input data-inline="true" type="submit" data-theme="b" class="logout" value="Logout" /></p>
+        </form>
+        <form class="passwordForm" method="post" action="" enctype="multipart/form-data">
+        	<h3 class="passwordChange">Change Password</h3>
+            <p><label for="oldPassword" class="oldPass">Old Password</label>
+            <input data-inline="true" type="password" data-theme="b" id="oldPassword" /></p>
+            
+            <p><label for="newPassword" value="New Password" class="newPass">New Password</label>
+            <input data-inline="true" type="password" data-theme="b" id="newPassword" /></p>
+            
+            <p><input data-inline="true" type="submit" data-theme="b" class="passwordChange" value="Change Password" /></p>     
+        </form>
+        <h3 class="onlineLib">Online Library</h3>
+        
+	</div> 
+    
+    
+	<div data-role="footer">
+        <h4><a href="http://thelittlelibrary.com">thelittlelibrary.com</a></h4> 
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1"> 
+<title>The Little Library</title>
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.css" />
+<script type="text/javascript" src="json2.js"></script>
+<script type="text/javascript" src="sha1.js"></script>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="jquery.couch.js"></script>
+<script type="text/javascript" src="jquery.form.js"></script>
+<script type="text/javascript" src="jquery.couchapp.js"></script>
+<script type="text/javascript" src="jqm.js"></script>
+<script type="text/javascript" src="library.js"></script>
+</head>
+<body>
+<div data-role="page" id="home">
+	<div data-role="header">
+    	<h1><strong>The Little Library</strong></h1>               
+        <div class="ui-btn-right">
+        	<a href="options.html" data-role="button" data-icon="gear" data-rel="dialog" data-iconpos="notext" data-transition="pop" rel="external" class="optionsBtn">Options</a>
+        </div>
+    </div>
+    
+  
+	<div data-role="content" class="content">
+    	
+        <ul class="homeList" data-role="listview" data-inset="true">
+            
+            <script type="text/javascript">
+				
+				$('div#home').live("pageshow", function() {  
+  					
+    				$.mobile.showPageLoadingMsg();
+					
+					if ($('#home ul.homeList li').text() == "" || !$('#home ul.homeList li')){
+						$('#home ul.homeList').categoryShow();
+					}
+					
+					$.mobile.hidePageLoadingMsg();
+				});
+			</script>
+            
+      	</ul>
+        
+	</div> 
+    
+	<div data-role="footer" class="footer">
+        <h4><a href="http://thelittlelibrary.com">thelittlelibrary.com</a></h4> 
+    </div>
+    
+</div>
+</body>
+</html>

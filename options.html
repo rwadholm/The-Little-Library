@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Little Library</title>
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.css" />
+<script type="text/javascript" src="json2.js"></script>
+<script type="text/javascript" src="sha1.js"></script>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="jquery.couch.js"></script>
+<script type="text/javascript" src="jquery.form.js"></script>
+<script type="text/javascript" src="jquery.couchapp.js"></script>
+<script type="text/javascript" src="jqm.js"></script>
+<script type="text/javascript" src="library.js"></script>
+</head>
+<body>
+<div data-role="page" id="options">
+	<div data-role="header" data-theme="b">
+    	<a href="index.html" rel="external" data-rel="back" data-role="button" data-icon="arrow-l" class="backBtn">Back</a>
+    	<h1><strong>Options</strong></h1>               
+        <div class="ui-btn-right">
+        	<a href="index.html" rel="external" data-role="button" data-icon="home" data-iconpos="notext" class="homeBtn">Home</a>
+        </div>
+    </div>
+    
+  
+	<div data-role="content" class="content">
+    	<script type="text/javascript">
+			$('div#options').live("pageshow", function() {
+				$('h1').text(libLang.optionsBtn);
+				$('.findMore').text(libLang.findMore);
+				$('.about').text(libLang.about);
+				$('.sync').text(libLang.sync);
+				$('.interface').text(libLang.interface);
+			});
+		</script>
+    
+        <ul data-role="listview" data-inset="true">
+        	
+            <li><a href="http://www.thelittlelibrary.com/" rel="external" class="findMore">Find More Online</a></li>
+            <li><a href="about.html" rel="external" class="about">About</a></li>
+            <li><a href="sync.html" rel="external" class="sync">Sync</a></li>
+            <li><a href="interface.html" rel="external" class="interface">Interface</a></li>
+            
+      	</ul>
+        
+	</div> 
+    
+    
+	<div data-role="footer">
+        <h4><a href="http://thelittlelibrary.com">thelittlelibrary.com</a></h4> 
+    </div>
+</div>
+</body>
+</html>
