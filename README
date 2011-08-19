@@ -66,11 +66,11 @@ connected via the internet again. Whoever has made the newest changes will win i
 there is a conflict. 
 
 If you want to build your own Little Library based application, feel free to. All of
-the software is released under MIT, Apache 2.0, and GPL licenses. 
+the software is released under MIT, Apache 2.0, and/or GPL licenses. 
 
 You'll just need to change the variables in the top of the library.js file (lines 10, 11, 12
 & 13), and several variables in the signup.php file (lines 15, 16, 21, 83 & 84). Then you'll 
-put signup.php onto a server, set up a couchdb online somewhere and locally. On your online 
-couch, you can either just replicate with The Little Library template at 
+put signup.php onto a server, set up a couchdb online somewhere and locally. On your 
+couchdb, you can either just replicate with The Little Library template at 
 rwadholm.irischouch.com/library, or you can upload all of these files into a design document
 other than signup.php and build away. 
