@@ -12,6 +12,7 @@ $('div#sync').live("pageshow", function() {
 	$('.ui-slider-label-a').text(libLang.continuously);
 	$('.getFrom').text(libLang.getFrom);
 	$('.getFromField span.ui-btn-inner').text(libLang.get);
+	$('#syncInstructions').html(libLang.syncInstructions);
 	
 	// Get the library URL
 	$('span.libraryURL').text(homeDB);

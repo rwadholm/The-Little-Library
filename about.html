@@ -4,7 +4,7 @@
 <meta charset="utf-8"> 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Little Library</title>
-<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.css" />
+<link rel="stylesheet" href="jqm.css" />
 <script type="text/javascript" src="json2.js"></script>
 <script type="text/javascript" src="sha1.js"></script>
 <script type="text/javascript" src="jquery.js"></script>
@@ -12,6 +12,7 @@
 <script type="text/javascript" src="jquery.form.js"></script>
 <script type="text/javascript" src="jquery.couchapp.js"></script>
 <script type="text/javascript" src="jqm.js"></script>
+<script type="text/javascript" src="router.js"></script>
 <script type="text/javascript" src="library.js"></script>
 </head>
 <body>
@@ -30,16 +31,27 @@
         <script type="text/javascript">
         	$('div#about').live("pageshow", function() { 
 			
+				// Remove change password feature
+				$('.passwordForm').remove();
+			
+				$('.librarySize').text(libLang.totalSize);
+				$('.compact span.ui-btn-inner').text(libLang.compact);
+				$('.compact label').text(libLang.compactLabel);
+				$('.logInfo').text(libLang.logout);
 				$('.passwordChange').text(libLang.changePass);
-				$('label.oldPass').text(libLang.oldPass);
 				$('label.newPass').text(libLang.newPass);
-				$('.onlineLib').text(libLang.onlineLib);
-				$('.logout span.ui-btn-inner').text(libLang.logout);
+				$('label.repeatPass').text(libLang.repeatPass);
 				$('.passwordForm span.ui-btn-inner').text(libLang.changePass);
+				$('.onlineLib h3').text(libLang.onlineLib);
+				$('.logout span.ui-btn-inner').text(libLang.logout);
 				$('h1').text(libLang.about);
+				$('.networkForm h3').text(libLang.network);
+				$('.networkForm label').text(libLang.putOnNetwork);
+				$('.networkForm .ui-slider-label-a').text(libLang.networkingOn);
+				$('.networkForm .ui-slider-label-b').text(libLang.networkingOff);
 				
 				// Show current size of library
-				$.getJSON(currentHost +'/library', function(dbInfo){
+				$.getJSON(homeDB, function(dbInfo){
 					netTotal = dbInfo.disk_size / maxDBSize; 
 					total = Math.round(netTotal * 100);
 					spaceUsed = Math.round(dbInfo.disk_size / 1000000);
@@ -49,38 +61,132 @@
 						spaceUsedTwo = 10;	
 					}
 					
-					$('div.content').prepend('<p><strong>'+ libLang.totalSize +':</strong> <span style="border: 1px solid #225377; height: 20px; width: 200px; padding: 6px; text-align: right; display: inline-block; position: relative;border-radius: 6px; z-index: 1; overflow: hidden; -webkit-box-shadow: inset 0px 0px 6px #aaa;">'+ spaceUsed +'MB<span style="border-radius: 6px;background: #bbb; display: block; position: absolute; top: 0px; height: 32px; right: 0px;width: '+ spaceUsedTwo +'px;z-index: -1;"> </span></span> ('+ total + libLang.limit +')</p>');
+					$('h3.librarySize').after('<p><span style="border: 1px solid #225377; height: 20px; width: 200px; padding: 6px; text-align: right; display: inline-block; position: relative;border-radius: 6px; z-index: 1; overflow: hidden; -webkit-box-shadow: inset 0px 0px 6px #aaa;">'+ spaceUsed +'MB<span style="border-radius: 6px;background: #bbb; display: block; position: absolute; top: 0px; height: 32px; right: 0px;width: '+ spaceUsedTwo +'px;z-index: -1;"> </span></span> ('+ total + libLang.limit +')</p>');
 				});
 				
 				
+				// See if library is broadcasting on the local network
+				$.ajax({
+					url: "/_config/httpd/bind_address",
+					type: "GET",
+					async: false,
+					contentType:"text/plain",
+					success: function(resp){
+						var response = resp.replace(/(")/g,'');
+						
+						// If broadcasting on local network, provide network address and set network to "On"
+						if(response.length !== 10){
+							
+							/*$("#networkSwitch").val("networkingOn").slider("refresh");*/
+							var myswitch = $("#networkSwitch");
+							myswitch[0].selectedIndex = 1;
+							myswitch .slider("refresh");
+						}
+					}
+				});		
+			
 			
 				// Get username, online library URL, etc.
 				$.getJSON(currentHost +'/_users/org.couchdb.user%3A'+ homeUser, function(userInfo){
-					$('form.aboutForm p.logout').prepend('<strong>'+ libLang.loggedInAs +':</strong> &nbsp; '+ homeUser +' ');
+					$('form.logoutForm p.logout').append('&nbsp;<strong>'+ libLang.loggedInAs +':</strong> &nbsp; '+ homeUser +' ');
 					// If an onlineDB exists, list the URLs
 					if (userInfo.onlineDB == homeURL && onlineBase == window.location.host){
-						$('div.content').append('<p>'+ libLang.thisIsOnline +'</p>');
+						$('.networkSection').remove();	
+						$('.onlineLib').remove();
 					}
-					else if (userInfo.onlineDB != "" && userInfo.onlineDB != null && window.location.host != '127.0.0.1'){
-						$('div.content').append('<p><strong>'+ libLang.URLToSync +':</strong> &nbsp; http://'+ onlineBase +'/'+ userInfo.onlineDB +' </p>');
+					else if (userInfo.onlineDB != "" && userInfo.onlineDB != null && window.location.host != '127.0.0.1' && window.location.host != "localhost"){
 						
-						$('div.content').append('<p><a href="http://'+ onlineBase +'/'+ userInfo.onlineDB +'/_design/library/index.html" data-role="button" data-inline="true">'+ libLang.visitOnline +'</a></p>');
+						// If an onlineDB exists, list the URLs
+						$('.onlineLib').append('<p><strong>'+ libLang.URLToSync +':</strong> &nbsp; http://'+ onlineBase +'/'+ userInfo.onlineDB +' </p>');
+						
+						$('.onlineLib').append('<p><div class="ui-btn ui-btn-inline ui-btn-corner-all ui-shadow ui-btn-up-b" data-theme="b" aria-disabled="false"><a href="http://'+ onlineBase +'/'+ userInfo.onlineDB +'/_design/library/index.html" data-role="button" data-inline="true" data-theme="b" style="color: #fff; text-decoration: none;"><span class="ui-btn-inner ui-btn-corner-all">'+ libLang.visitOnline +'</span></a></div></p>');
 						
 						$('form.passwordForm').append(' <a href="http://'+ onlineBase +'/'+ userInfo.onlineDB +'/_design/library/index.html" data-role="button" data-inline="true">'+ libLang.changeOnlinePass +' &gt;&gt;</a>');
 					
 					}
 					else {
-						$('div.content').append('<p style="color: red">'+ libLang.noOnlineLib +'</p>');
+						$('.onlineLib').append('<p style="color: red">'+ libLang.noOnlineLib +'</p>');
 					};
 					
 					
+					
+					// Compact database
+					$('input.compact').live('click', function(event){
+						
+						event.preventDefault();
+						
+						$.ajax({
+							url: homeDB +"/_compact",
+							type: "POST",
+							contentType:"application/json",
+							async: false,
+							success: function(){
+								window.location.replace("about.html");	
+							}
+						});
+					});
+					
+					
+					// Set up library on the local network
+					$('input#network').live('click', function(event){
+						
+						event.preventDefault();
+						
+						if ($('select#networkSwitch').val() == "networkingOn"){
+							// Turn on local networking
+							$.ajax({
+								url: "/_config/httpd/bind_address",
+								type: "PUT",
+								data: JSON.stringify("0.0.0.0"),
+								contentType:"application/json",
+								success: function(){
+									
+									alert(libLang.networkingOn); 
+									
+									$.ajax({
+										url: "/_restart",
+										type: "POST",
+										contentType:"application/json",
+										success: function(){  
+											window.location.replace('login.html');  
+										}
+									});
+								}
+							});
+						} else {
+							// Turn off local networking
+							$.ajax({
+								url: "/_config/httpd/bind_address",
+								type: "PUT",
+								data: JSON.stringify("127.0.0.1"),
+								contentType:"application/json",
+								success: function(){
+									
+									alert(libLang.networkingOff); 
+									
+									$.ajax({
+										url: "/_restart",
+										type: "POST",
+										contentType:"application/json",
+										success: function(){ 
+											window.location.replace('login.html');     
+										}
+									});
+								}
+							});
+						};
+					});
+					
+					/* PASSWORD FEATURES NOT WORKING ONLINE
 					// Set new password
 					$('input.passwordChange').live('click', function(event){
 						
 						event.preventDefault();
 						
+						oldPassword = sessionStorage.getItem("current");
+						
 						password = $('input#newPassword').val();
-						oldPassword = $('input#oldPassword').val();
+						repeatPassword = $('input#repeatPassword').val();
 						onlineDB = userInfo.onlineDB;
 						saltEnc = $.couch.newUUID();
 						passwordEnc = hex_sha1(password + saltEnc);
@@ -88,12 +194,18 @@
 						onlineCouchUserUn = "org.couchdb.user:"+ onlineDB;
 						couchUser = "org.couchdb.user%3A"+ onlineDB;
 						currentRev = userInfo._rev;
-						secureOnlineDB = 'https://bob1:rochelle@'+ onlineBase;
+						secureOnlineDB = 'https://'+ onlineDB +':'+ oldPassword +'@'+ onlineBase;
 						
-						if(password = ""){
+						
+						if (repeatPassword != password) {
+							alert(libLang.validPassword); 
+							return;
+						};
+						if(!password[0]){
 							alert(libLang.validPassword);
 							return;	
-						}
+						};
+						
 						
 						// Save new password locally
 						$.couch.db("_users").saveDoc({
@@ -104,56 +216,63 @@
 							"password_sha":passwordEnc,
 							"salt":saltEnc,
 							"type":"user",
-							"roles":[]
+							"roles":[homeUser]
 							}, {
 							success: function() { 
 								
-								// If there is no online library set up, indicate success
-								if(onlineDB == "" || !onlineDB){
-									alert(libLang.saved);
-								}
-								else{
+								// Change admin password
+								$.ajax({
+									url: "/_config/admins/"+ homeUser,
+									type: "PUT",
+									data: JSON.stringify(password),
+									contentType:"application/json",
+									success: function(){
+										
+										// If there is no online library set up, indicate success
+										if(onlineDB == "" || !onlineDB){
+											sessionStorage.setItem("current",password);
+											alert(libLang.saved);
+										}
+										else{
 								
-									// Get online user info
-									onlineUserURL = 'http://'+ onlineBase +'/_users/org.couchdb.user%3A'+ onlineDB;
-									$.ajax({
-										url: onlineUserURL,
-										dataType: 'jsonp',
-										error: function(){
-											alert(libLang.noSyncOnline);	
-										},
-										success: function(onlineUserInfo){
-									
-											onlineCurrentRev = onlineUserInfo._rev;
-											
-											// Save new password online
+											// Get online user info
+											onlineUserURL = 'http://'+ onlineBase +'/_users/org.couchdb.user%3A'+ onlineDB;
 											$.ajax({
-												url: secureOnlineDB +"/_users/"+ couchUser,
-												type: 'POST',
-												beforeSend: function( xhr ) {
-													xhr.overrideMimeType( 'Script; charset=x-user-defined' );
+												url: onlineUserURL,
+												dataType: 'jsonp',
+												type: 'GET',
+												error: function(){
+													alert(libLang.noSyncOnline);
+													sessionStorage.setItem("current",password);	
 												},
-												dataType:"jsonp",
-												data: {
-													"_id": onlineCouchUserUn,
-													"_rev":onlineCurrentRev, 
-													"name":onlineDB,
-													"onlineDB":onlineDB, 
-													"password_sha":passwordEnc,
-													"salt":saltEnc,
-													"type":"user",
-													"roles":[]
-												},
-												success: function(){
-													alert(libLang.saved);
-												}
+												success: function(onlineUserInfo){
+													
+													onlineCurrentRev = onlineUserInfo._rev;
+													
+													// Save new password online
+													$.ajax({
+														url: secureOnlineDB +"/_users/"+ couchUserUn+'?callback=',
+														type: 'PUT',
+														//contentType:"application/json",
+														dataType:"jsonp",
+														data: JSON.stringify({"_id": onlineCouchUserUn,"_rev":onlineCurrentRev, "name":onlineDB, "onlineDB":onlineDB, "password_sha":passwordEnc, "salt":saltEnc, "type":"user", "roles":[onlineDB]}),
+														error: function(){
+															sessionStorage.setItem("current",password);
+															alert("Not able to change online password");
+														},
+														success: function(respond){
+															sessionStorage.setItem("current",password);
+															alert(libLang.saved +' :'+ respond[0]);
+														}
+													});
+												 }
 											});
-										 }
-									});
-								}
+										}
+									}
+								});
 							}
 						});
-					});
+					});*/
 				});
 				
 				
@@ -169,24 +288,55 @@
 					});
 				});
 			});
-			
         </script>
         
         <form class="aboutForm" method="post" action="" enctype="multipart/form-data">
+            <h3 class="librarySize">Total Size of Your Library</h3>
+            <p class="compact"><input class="compact" data-inline="true" data-theme="b" name="compact" id="compact" type="button" value="Clean Library" /><label for="compact"></label></p>
+        </form>   
+        	<hr />
+        <form class="logoutForm" method="post" action="" enctype="multipart/form-data">
+            <h3 class="logInfo">Logout</h3>
             <p class="logout"><input data-inline="true" type="submit" data-theme="b" class="logout" value="Logout" /></p>
-        </form>
+           
+        </form> 
         <form class="passwordForm" method="post" action="" enctype="multipart/form-data">
-        	<h3 class="passwordChange">Change Password</h3>
-            <p><label for="oldPassword" class="oldPass">Old Password</label>
-            <input data-inline="true" type="password" data-theme="b" id="oldPassword" /></p>
+        	
+        	<hr />
+            <h3 class="passwordChange">Change Password</h3>
             
-            <p><label for="newPassword" value="New Password" class="newPass">New Password</label>
-            <input data-inline="true" type="password" data-theme="b" id="newPassword" /></p>
+            <p><label for="newPassword" class="newPass">New Password</label>
+            <input data-inline="true" type="password" data-theme="b" id="newPassword" name="newPassword" /></p>
+            
+            <p><label for="repeatPassword" value="Repeat Password" class="repeatPass">Repeat Password</label>
+            <input data-inline="true" type="password" data-theme="b" id="repeatPassword" name="repeatPassword" /></p>
             
             <p><input data-inline="true" type="submit" data-theme="b" class="passwordChange" value="Change Password" /></p>     
         </form>
-        <h3 class="onlineLib">Online Library</h3>
         
+        <div class="networkSection">
+            <form class="networkForm" method="post" action="" enctype="multipart/form-data">
+                <hr />
+                <h3>Network</h3>
+                <label for="networkSwitch">Put Library on Local Network</label>
+                
+                <select name="networkSwitch" class="networkSwitch" id="networkSwitch" data-role="slider">
+                    <option value="networkingOff" class="networkingOff">Networking Off</option>
+                    <option value="networkingOn" class="networkingOn">Networking On</option>
+                </select>
+                
+                <br />
+                <input type="submit" data-theme="b" id="network" value="Update" data-inline="true">
+                
+            </form>
+            <hr />
+        </div>
+        
+        
+        <div class="onlineLib">
+        	<h3>Online Library</h3>
+            
+        </div>
 	</div> 
     
     

@@ -7,21 +7,11 @@ dbURL = (dbURL[1] ? dbURL[1] : dbURL[0]).split("/");
 var homeURL = dbURL[1]; // variable for the database name
 var homeDB = currentHost +"/"+ homeURL; // variable for the database full url
 var repOptions = {"continuous":true};
-var templateDB = "http://rwadholm.iriscouch.com/library"; // URL to the template for The Little Library
-var signupURL = "http://www.thelittlelibrary.com/signup.php"; // URL to PHP signup script
-var onlineBase = "rwadholm.iriscouch.com"; // URL of online database hosting all onlineDBs
+var templateDB = "http://library.ic.tl/library"; // URL to the template for The Little Library
+var signupURL = "http://www.thelittlelibrary.com/library.php"; // URL to PHP signup script
+var onlineBase = "library.ic.tl"; // URL of online database hosting all onlineDBs
 var maxDBSize = 250000000; // Default max DB size is 250MB
 var homeUser = '';
-
-// Get username
-$.ajax({
-	url: '/_replicator',
-	dataType: 'json',
-	async: false,
-	success: function(session){
-		homeUser = session.userCtx.name;
-	}
-});
 
 // Get username
 $.ajax({
@@ -95,7 +85,7 @@ jQuery.fn.createOnlineDB = function(username, password){
 				secureOnlineDB = 'https://'+ onlineDB +':'+ password +'@'+ onlineBase +'/'+ onlineDB;
 				
 				// If setting up onlineDB was successful
-				if (onlineDB != ""){
+				if (onlineDB != "" /*&& onlineDB.length <= 60*/){
 					
 					currentRev = userInfo._rev;
 					
@@ -119,7 +109,7 @@ jQuery.fn.createOnlineDB = function(username, password){
 						contentType:"application/json",
 						error: function(){
 							alert(libLang.noSyncOnline); // Get text for language
-							window.location.replace("index.html");
+							window.location.replace("login.html");
 						}
 					});
 					
@@ -131,18 +121,18 @@ jQuery.fn.createOnlineDB = function(username, password){
 						contentType:"application/json",
 						success: function(){
 							alert(libLang.createSync); // Get text for language
-							window.location.replace("index.html");
+							window.location.replace("login.html");
 						},
 						error: function(){
 							alert(libLang.noSyncOnline); // Get text for language
-							window.location.replace("index.html");
+							window.location.replace("login.html");
 						}
 					});
 					
 				}
 				else {
 					alert(libLang.noOnline);
-					window.location.replace("index.html");	
+					window.location.replace("login.html");	
 				};
 			}
 		});
@@ -154,7 +144,7 @@ jQuery.fn.createOnlineDB = function(username, password){
 // Sign up for new library, turn on replication, and login
 jQuery.fn.signupForm = function(username, password){
 	
-	$.couch.signup({"name": username,"onlineDB":"",roles:[]}, password, {
+	$.couch.signup({"name": username,"onlineDB":"",roles:[username]}, password, {
 		success: function(){ 
 			
 			$.couch.login({"name": username,"password": password});

@@ -4,7 +4,7 @@
 <meta charset="utf-8"> 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Little Library</title>
-<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.css" />
+<link rel="stylesheet" href="jqm.css" />
 <script type="text/javascript" src="json2.js"></script>
 <script type="text/javascript" src="sha1.js"></script>
 <script type="text/javascript" src="jquery.js"></script>
@@ -33,7 +33,7 @@
             <!--<p>My Library: <span class="libraryURL"></span></p>-->
             
             <div data-role="fieldcontain">
-                <label for="repTo" class="sendTo">Send all library items to:</label>
+                <label for="repTo" class="sendTo">Send all library items to: (URL of an online library with username and password included, for example https://username:password@example.com/library)</label>
                 <input type="text" name="repTo" id="repTo" class="repURL" placeholder="http://example.com/library" data-inline="true" />
                 <span class="sendToField"><input data-inline="true" type="submit" data-theme="b" class="submitRepTo" value="Send" /></span>
                 <label for="continuousRepTo"></label>
@@ -50,7 +50,7 @@
             <br />
             
             <div data-role="fieldcontain">
-                <label for="repFrom" class="getFrom">Get all library items from:</label>
+                <label for="repFrom" class="getFrom">Get all library items from: </label>
                 <input type="text" name="repFrom" id="repFrom" class="repURL" placeholder="http://example.com/library" data-inline="true" />
                 <span  class="getFromField"><input type="submit" data-inline="true" data-theme="b" class="submitRepFrom" value="Get" /></span>
                 <label for="continuousRepTo"></label>                
@@ -59,8 +59,10 @@
                     <option value="continuous" class="continuously">Continuously</option>
                 </select> 
             </div>
+            <br />
             
-            <div data-role="fieldcontain">
+            <div data-role="fieldcontain" id="syncInstructions">
+            <hr /><h2>Instructions</h2><p>To <strong>send</strong> all of your library items to another online library, provide the URL to the other online library with their online username and password (for example, https://onlineusername:password@example.com/otherlibrary), indicate if you want to continually send all updates of your items to the other library or if you only want to send your items once, and then click Send.</p><p>To <strong>get</strong> all items from another library, provide the URL to the other online library (for example, http://example.com/otherlibrary), indicate if you want to continuously get all updates of the library or if you only want to get items once, and then click Get.</p><p>To <strong>fully syncronize</strong> your library with the library of a friend, get all items from their library continuously, and have them do the same with your library. Now both libraries will always remain identical, and you will receive automatic updates when your friend makes changes to their library, and they will receive automatic updates when you make changes to your library.</p>
             </div>
             <!-- <p id="serverResponse"></p> -->
         </form>

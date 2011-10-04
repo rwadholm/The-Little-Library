@@ -20,6 +20,9 @@ $('div#settings').live("pageshow", function() {
 	var itemID = $('#settings').getParameter('id');	
 	var itemType = $('#settings').getParameter('type');
 	
+	// Set the title of the page
+	$('h1').text(libLang.add +' '+ libLang[itemType]);
+	
 	// If user has clicked on add button, don't look for any JSON files to fill in form and remove delete button
 	$('.deleteButton').fadeOut();
 	
