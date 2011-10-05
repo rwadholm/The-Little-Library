@@ -121,7 +121,7 @@ jQuery.fn.createOnlineDB = function(username, password){
 						contentType:"application/json",
 						error: function(){
 							alert(libLang.noSyncOnline); // Get text for language
-							window.location.replace("login.html");
+							window.location.replace("index.html");
 						}
 					});
 					
@@ -133,18 +133,18 @@ jQuery.fn.createOnlineDB = function(username, password){
 						contentType:"application/json",
 						success: function(){
 							alert(libLang.createSync); // Get text for language
-							window.location.replace("login.html");
+							window.location.replace("index.html");
 						},
 						error: function(){
 							alert(libLang.noSyncOnline); // Get text for language
-							window.location.replace("login.html");
+							window.location.replace("index.html");
 						}
 					});
 					
 				}
 				else {
 					alert(libLang.noOnline);
-					window.location.replace("login.html");	
+					window.location.replace("index.html");	
 				};
 			}
 		});

@@ -274,19 +274,6 @@
 						});
 					});*/
 				});
-				
-				
-				
-				// Logout
-				$('input.logout').live('click', function(event){
-					event.preventDefault();
-					
-					$.couch.logout({success: function(){
-							window.location.replace("login.html");
-						
-						}
-					});
-				});
 			});
         </script>
         
@@ -294,12 +281,7 @@
             <h3 class="librarySize">Total Size of Your Library</h3>
             <p class="compact"><input class="compact" data-inline="true" data-theme="b" name="compact" id="compact" type="button" value="Clean Library" /><label for="compact"></label></p>
         </form>   
-        	<hr />
-        <form class="logoutForm" method="post" action="" enctype="multipart/form-data">
-            <h3 class="logInfo">Logout</h3>
-            <p class="logout"><input data-inline="true" type="submit" data-theme="b" class="logout" value="Logout" /></p>
-           
-        </form> 
+        
         <form class="passwordForm" method="post" action="" enctype="multipart/form-data">
         	
         	<hr />

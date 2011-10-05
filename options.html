@@ -33,12 +33,25 @@
 				$('.about').text(libLang.about);
 				$('.sync').text(libLang.sync);
 				$('.interface').text(libLang.interface);
+				$('.logout').text(libLang.logout);
+				
+				// Logout
+				$('.logout').live('click', function(event){
+					event.preventDefault();
+					
+					$.couch.logout({success: function(){
+							window.location.replace("login.html");
+						
+						}
+					});
+				});
 			});
 		</script>
     
         <ul data-role="listview" data-inset="true">
         	
             <!--<li><a href="http://www.thelittlelibrary.com/" rel="external" class="findMore">Find More Online</a></li>-->
+            <li><a href="login.html" rel="external" class="logout">Logout</a></li>
             <li><a href="about.html" rel="external" class="about">About</a></li>
             <li><a href="sync.html" rel="external" class="sync">Sync</a></li>
             <li><a href="interface.html" rel="external" class="interface">Interface</a></li>
