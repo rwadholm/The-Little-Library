@@ -7,9 +7,9 @@ dbURL = (dbURL[1] ? dbURL[1] : dbURL[0]).split("/");
 var homeURL = dbURL[1]; // variable for the database name
 var homeDB = currentHost +"/"+ homeURL; // variable for the database full url
 var repOptions = {"continuous":true};
-var templateDB = "http://library.ic.tl/library"; // URL to the template for The Little Library
+var templateDB = "http://library.iriscouch.com/library"; // URL to the template for The Little Library
 var signupURL = "http://www.thelittlelibrary.com/library.php"; // URL to PHP signup script
-var onlineBase = "library.ic.tl"; // URL of online database hosting all onlineDBs
+var onlineBase = "library.iriscouch.com"; // URL of online database hosting all onlineDBs
 var maxDBSize = 250000000; // Default max DB size is 250MB
 var homeUser = '';
 
@@ -30,14 +30,26 @@ $.ajax({
 	dataType: 'json',
 	async: false,
 	success: function(langJSON){
-		$.ajax({
-			url: '/'+ homeURL +'/'+ langJSON.rows[0].id,
-			dataType: 'json',
-			async: false,
-			success: function(langData){
-			  	libLang = langData.texts;
-			}
-		}); 
+		if(langJSON.total_rows == '0'){
+			$.ajax({
+				url: '/'+ homeURL +'/_design/library/language.json',
+				dataType:'json',
+				async: false,
+				success: function(langData){
+					libLang = langData.texts;
+				}
+			});
+		}
+		else {
+			$.ajax({
+				url: '/'+ homeURL +'/'+ langJSON.rows[0].id,
+				dataType: 'json',
+				async: false,
+				success: function(langData){
+					libLang = langData.texts;
+				}
+			}); 
+		}
 	}
 });
 
