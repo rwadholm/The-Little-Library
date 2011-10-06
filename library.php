@@ -4,6 +4,7 @@
 // Based on http://wiki.apache.org/couchdb/Getting_started_with_PHP Apache license version 2
 
 header("Access-Control-Allow-Origin: *");
+header("Cache-Control: no-cache, must-revalidate");
 //error_reporting(0);
 
 $rawUsername = $_REQUEST['username'];
@@ -18,7 +19,7 @@ $adminPassword = "putAdminPasswordHere"; // Change these to flat file on root po
 $options['host'] = "example.com"; // Location of all onlineDB's
 $options['port'] = 5984; 
 
-$templateDB = "example/library"; // Location of the DB that will serve as a template
+$templateDB = "example.com/library"; // Location of the DB that will serve as a template
 
 $couch = new CouchSimple($options); // See if we can make a connection
 
@@ -58,16 +59,15 @@ else {
 		"type": "user"
 	}'); 
 	
-	/*// Make the new user the admin of their DB
-	$resp = $couch->send("PUT", "/". $onlineDB ."/_security", '{"admins":{"roles":["'. $onlineDB .'"]},"readers":{"names":[],"roles":[]}}');*/
 	
-	// Create a new replication document
-	$resp = $couch->send("POST", "/_replicate/", '{"target":"https://' . $adminUsername . ':' . $adminPassword . '@' . $options['host'] . '/' . $onlineDB . '","source":"http://' . $templateDB . '", "continuous": true}');
+	// Create a new replication document in the replicator db with that is named the same as the username
+	$resp = $couch->send("POST", "/_replicator", '{"_id": "' . $username . '","target":"' . $onlineDB . '","source":"library", "user_ctx":{"name":"' . $adminUsername . '","roles":["_admin"]},"continuous": true}');
 	
 	
 	// Create a JSON response that gives the new onlineDB name
 	echo $onlineDB;
 }	 
+
 
 
 class CouchSimple {

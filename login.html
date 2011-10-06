@@ -107,7 +107,7 @@
 													url: "/_replicate",
 													type: "POST",
 													async: false,
-													data: JSON.stringify({"source": homeDB, "target": onlineHomeDB, "user_ctx": {"name": username},"continuous":true}),
+													data: JSON.stringify({"source": homeDB, "target": onlineHomeDB, "continuous":true}),
 													contentType:"application/json",
 													error: function(){
 														alert(libLang.noSyncOnline); // Get text for langauge
@@ -254,6 +254,7 @@
 													sessionStorage.setItem("current",password);
 													
 													secureOnlineDB = 'https://'+ onlineUser +':'+ password +'@'+ onlineBase +'/'+ onlineUser;
+													secureHomeDB = "http://"+ username +":"+ password +"@"+ dbURL[0] +"/"+ homeURL;
 								
 														
 													// Replicate from templateDB to local library
@@ -261,7 +262,7 @@
 														url: "/_replicate",
 														type: "POST",
 														async: false,
-														data: JSON.stringify({"source": templateDB, "target": homeDB, "continuous":true}),
+														data: JSON.stringify({"source": secureOnlineDB, "target": secureHomeDB, "continuous":true}),
 														contentType:"application/json",
 														error: function(){
 															alert(libLang.noSyncOnline); // Get text for language
@@ -269,22 +270,36 @@
 														}
 													});
 													
-													// Replicate to onlineDB from local library
-													$.ajax({
-														url: "/_replicate",
-														type: "POST",
-														async: false,
-														data: JSON.stringify({"source": homeDB, "target": secureOnlineDB, "continuous":true}),
-														contentType:"application/json",
-														success: function(){
-															alert(libLang.createSync); // Get text for language
-															window.location.replace("index.html");
-														},
-														error: function(){
-															alert(libLang.noSyncOnline); // Get text for language
-															window.location.replace("index.html");
-														}
-													});
+													// Replicate to onlineDB
+												$.ajax({
+													url: "/_replicate",
+													type: "POST",
+													async: false,
+													data: JSON.stringify({"source": secureHomeDB, "target": secureOnlineDB, "continuous":true}),
+													contentType:"application/json",
+													error: function(){
+														alert(libLang.noSyncOnline); // Get text for langauge
+														window.location.replace("index.html");
+													},
+													success: function(){
+														
+														// Replicate from onlineDB
+														$.ajax({
+															url: "/_replicate",
+															type: "POST",
+															async: false,
+															data: JSON.stringify({"source": secureOnlineDB, "target": secureHomeDB, "continuous":true}),
+															contentType:"application/json",
+															success: function(){
+																window.location.replace("index.html");
+															},
+															error: function(){
+																alert(libLang.noSyncOnline); // Get text for langauge
+																window.location.replace("index.html");
+															}
+														});
+													}
+												});
 												}
 											});
 								

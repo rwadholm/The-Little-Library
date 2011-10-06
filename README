@@ -1,4 +1,4 @@
-The Little Library is an open source application that allows you to upload, 
+mThe Little Library is an open source application that allows you to upload, 
 store, and share creative commons licensed content across computers and 
 digital devices, offline and in the cloud. This is the Beta Version. The 
 Little Library was built as a peer-to-peer sharing distributed platform 
@@ -77,8 +77,8 @@ If you want to build your own Little Library based application, feel free to. Al
 the software is released under MIT, Apache 2.0, and/or GPL licenses. 
 
 You'll just need to change the variables in the top of the library.js file (lines 10, 11, 12
-& 13), and several variables in the signup.php file (lines 15, 16, 21, 83 & 84). Then you'll 
-put signup.php onto a server, set up a couchdb online somewhere and locally. On your 
+& 13), and several variables in the library.php file (lines 15, 16, 21, 83 & 84). Then you'll 
+put library.php onto a server, set up a couchdb online somewhere and locally. On your 
 couchdb, you can either just replicate with The Little Library template at 
-library.ic.tl/library, or you can upload all of these files (other than signup.php) into a 
-design document and build away. 
+library.ic.tl/library, or you can upload all of these files (other than library.php) into a 
+design document and build away (check out the validate_doc_update, views, etc. in the library.ic.tl/librar/_design/library document to see how this is currently implemented). 
