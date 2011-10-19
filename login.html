@@ -1,0 +1,297 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Little Library</title>
+<link rel="stylesheet" href="jqm.css" />
+<script type="text/javascript" src="json2.js"></script>
+<script type="text/javascript" src="sha1.js"></script>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="jquery.couch.js"></script>
+<script type="text/javascript" src="jquery.form.js"></script>
+<script type="text/javascript" src="jquery.couchapp.js"></script>
+<script type="text/javascript" src="jqm.js"></script>
+<script type="text/javascript" src="library.js"></script>
+</head>
+<body>
+<div data-role="page" id="login">
+	<div data-role="header" data-theme="b">
+    	<a href="index.html" rel="external" data-rel="back" data-role="button" data-icon="arrow-l" class="backBtn">Back</a>
+    	<h1 data-login="login">The Little Library</h1>               
+        <div class="ui-btn-right">
+        	<a href="index.html" rel="external" data-role="button" data-icon="home" data-iconpos="notext" class="homeBtn">Home</a>
+        </div>
+    </div>
+    
+  
+	<div data-role="content" class="content">
+        
+        <script type="text/javascript">
+        	$('div#login').live("pageshow", function() { 
+				
+				$('label.userLabel').text(libLang.userLabel);
+				$('label.passLabel').text(libLang.passLabel);
+							
+				// Get the user info for authentication
+				$.getJSON(currentHost +'/_users', function(userInfo){
+					if(userInfo.doc_count >= 2) {
+						
+						$('.loginBtn span.ui-btn-text').text(libLang.login);
+						
+						// If logging into online library, make default username same as online library name
+						if (onlineBase == window.location.host){
+							$('input#username').val(homeURL);
+						}
+						
+						$('input.login').live('click', function(event){
+							event.preventDefault();
+							
+							username = $('input#username').val();
+							password = $('input#password').val();
+							
+							if (onlineBase == window.location.host && username != homeURL){
+								alert(libLang.validUser); // Get text for langauge
+								return
+							}
+							if (!username || username.length == 0) {
+								alert(libLang.validUser); // Get text for langauge
+								return;
+							}
+							
+							if (!password || password.length == 0) {
+								alert(libLang.validPassword); // Get text for langauge
+								return;
+							}
+							
+							$.couch.login({
+								"name": username, 
+								"password": password,
+								success: function(){
+									
+									$.mobile.showPageLoadingMsg();
+									
+									sessionStorage.setItem("current",password);
+									
+									// Check if user is accessing online library
+									if (onlineBase != window.location.host){
+									
+										// Get onlineDB info
+										$.getJSON(currentHost +'/_users/org.couchdb.user%3A'+ username, function(userInfoRoot){
+											userOnlineDB = userInfoRoot.onlineDB;
+											
+											// If user doesn't yet have an online library, create one
+											if (userOnlineDB == "" || userOnlineDB == "undefined" || userOnlineDB == null){
+												$('div').createOnlineDB(username,password);
+											}
+											else { 
+												
+												// If user does have online library already, set up syncing
+												onlineHomeDB = "https://"+ userOnlineDB +":"+ password +"@"+ onlineBase +"/"+ userOnlineDB;
+												homeDB = "http://"+ username +":"+ password +"@"+ dbURL[0] +"/"+ homeURL;
+												onlineDB = "http://"+ onlineBase +"/"+ userOnlineDB;
+												
+												
+												// Replicate to onlineDB
+												/*$.ajax({
+													url: "/_replicate",
+													type: "POST",
+													data: JSON.stringify({"source": homeDB, "target": onlineHomeDB, "userCtx":{"name": userOnlineDB, "db": userOnlineDB}, "continuous":true}),
+													contentType:"application/json",
+													error: function(){
+														alert(libLang.noSyncOnline);
+														window.location.replace("index.html");
+													}
+												}).done(function(msg) {
+													*/		
+													// Replicate from onlineDB to local library
+													$.ajax({
+														url: "/_replicate",
+														type: "POST",
+														data: JSON.stringify({"source": onlineDB, "target": homeDB, "userCtx":{"roles":["_admin",username], "name": username}, "continuous":true}),
+														contentType:"application/json",
+														error: function(){
+															alert(libLang.noSyncOnline); 
+															window.location.replace("index.html");
+														},
+														success: function(message){
+															if(message){
+																
+																window.location.replace("index.html");
+															};
+														}
+													});
+												/*});*/
+											};
+										});
+									}
+									else {
+										window.location.replace("index.html");
+									};
+								}
+							});
+						});
+						
+					// If not signed up in the database, load signup page
+					} else { 
+						
+						$('.loginBtn .ui-btn-text').text(libLang.createLibrary);
+						$('.login').val(libLang.createLibrary);
+						
+						$('.passwordField').after('<div data-role="fieldcontain" class="repeatPasswordField"><label for="password2" class="ui-input-text">'+ libLang.repeatPass +'</label><input type="password" name="password2" id="password2" data-inline="true" class="ui-input-text ui-body-null ui-corner-all ui-shadow-inset ui-body-c" /></div>');
+						
+						$('.loginBtn').before('<br /><div data-role="fieldcontain" class="ui-field-contain ui-body ui-br" style="display: block;"><input type="checkbox" name="connectOnline" id="connectOnline" value="Yes"><label for="connectOnline" class="connectOnlineLabel"><strong> '+ libLang.connectOnline +'</strong></label></div><div class="onlineUserDiv" style="display: none"><label for="onlineUser" class="ui-input-text">'+ libLang.onlineUser +'</label><input type="text" name="onlineUser" id="onlineUser" data-inline="true" class="ui-input-text ui-body-null ui-corner-all ui-shadow-inset ui-body-c" /></div><div class="terms" style="margin: 20px 0px; border: 1px solid #ccc; padding: 0px 20px; border-radius: 10px; background: #fff;">'+ libLang.terms +'</div><div data-role="fieldcontain" class="acceptTermsDiv ui-field-contain ui-body ui-br" style="display: block;"><input type="checkbox" name="acceptTerms" id="acceptTerms" value="Yes">&nbsp;&nbsp;<label for="acceptTerms" class="acceptTermsLabel">'+ libLang.acceptTerms +'</label></div>');
+						
+						$('input#connectOnline').live('click', function(event){
+							
+							$('.acceptTermsDiv').fadeToggle();
+							$('.terms').fadeToggle(function(){
+								$('.onlineUserDiv').fadeToggle();
+							});
+						});
+						
+					
+						
+						// Sign up new user and create new library and/or connect to previous account
+						$('input.login').live('click', function(event){
+							event.preventDefault();
+							
+							username = $('input#username').val();
+							password = $('input#password').val();
+							password2 = $('input#password2').val();
+							acceptTerms = $('input#acceptTerms:checked').val();
+							connectOnline = $('input#connectOnline:checked').val();
+							
+							if (!username || username.length == 0) {
+								alert(libLang.validUser); 
+								return;
+							}
+							
+							if (password != password2) {
+								alert(libLang.validPassword); 
+								return;
+							}
+							
+							if (!password || password.length == 0) {
+								alert(libLang.validPassword); 
+								return;
+							}
+							
+							// Fade out login button so that users don't keep pushing it ;)
+							//$('input.login').remove();
+							
+							// Set delayed commits to "false" in the config file for added stability
+							$.ajax({
+								url: "/_config/couchdb/delayed_commits",
+								type: "PUT",
+								data: JSON.stringify("false"),
+								contentType:"application/json",
+								success: function(response){
+									if(response){
+										
+										// Change automatic logout from 10 minutes to 100 minutes
+										$.ajax({
+											url: "/_config/couch_httpd_auth/timeout",
+											type: "PUT",
+											data: JSON.stringify("60000"),
+											contentType:"application/json",
+											success: function(response1){
+												if(response1){
+													
+													// Set up user as database admin
+													$.ajax({
+														url: "/_config/admins/"+ username,
+														type: "PUT",
+														async: false,
+														data: JSON.stringify(password),
+														contentType:"application/json",
+														success: function(response2){
+															
+															if(response2){
+															
+																$.couch.login({
+																	"name": username, 
+																	"password": password,
+																	success: function(response3){
+																		
+																		if(response3){
+																
+																			// If user has no previous library, create one
+																			if (connectOnline != "Yes"){
+																					
+																				if (acceptTerms != "Yes") {
+																					alert(libLang.acceptTermsNo); // Get text for langauge
+																					return;
+																				}
+																				
+																				sessionStorage.setItem("current",password);
+																				
+																				$('.loginForm').signupForm(username, password);	
+																				
+																			}
+																			
+																			// Else, setup user and local library, and replicate with specified online library
+																			else {
+																				
+																				onlineUser = $('input#onlineUser').val();
+																				
+																				if (!onlineUser || onlineUser.length == 0) {
+																					alert(libLang.validOnlineUser); // Get text for langauge
+																					return;
+																				}
+																				
+																				$.couch.signup({"name": username,"onlineDB":onlineUser,"roles":[username]}, password, {
+																					success: function(response4){ 
+																						
+																						if(response4){
+																							$.mobile.pageLoading();												
+																							window.location.replace('login.html'); 
+																						};
+																					}
+																				});
+																			};
+																		};
+																	}
+																});
+															};
+														}
+													});
+												};
+											}
+										});
+									};
+								}
+							});
+						});
+					};
+				});
+			});
+        </script>
+        
+    	<form class="loginForm" method="post" action="" enctype="multipart/form-data">
+            
+            <div data-role="fieldcontain">
+                <label for="username" class="userLabel">Username:</label>
+                <input type="text" name="username" id="username" data-inline="true" />
+            </div>
+            
+            <div data-role="fieldcontain" class="passwordField">
+                <label for="password" class="passLabel">Password:</label>
+                <input type="password" name="password" id="password" data-inline="true" />
+            </div>
+            
+            <div data-role="fieldcontain" class="loginBtn">
+                <input type="submit" data-theme="b" class="login" value="Login" />
+            </div> 
+            
+        </form>
+        
+	</div> 
+    
+    
+	<div data-role="footer">
+        <h4><a href="http://thelittlelibrary.com">thelittlelibrary.com</a></h4> 
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Little Library</title>
+<link rel="stylesheet" href="jqm.css" />
+<script type="text/javascript" src="json2.js"></script>
+<script type="text/javascript" src="sha1.js"></script>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="jquery.couch.js"></script>
+<script type="text/javascript" src="jquery.form.js"></script>
+<script type="text/javascript" src="jquery.couchapp.js"></script>
+<script type="text/javascript" src="jqm.js"></script>
+<script type="text/javascript" src="library.js"></script>
+</head>
+<body>
+<div data-role="page" id="sync">
+	<div data-role="header" data-theme="b">
+    	<a href="index.html" rel="external" data-rel="back" data-role="button" data-icon="arrow-l" class="backBtn">Back</a>
+    	<h1><strong>Sync Options</strong></h1>               
+        <div class="ui-btn-right">
+        	<a href="index.html" rel="external" data-role="button" data-icon="home" data-iconpos="notext" class="homeBtn">Home</a>
+        </div>
+    </div>
+    
+  
+	<div data-role="content" class="content">
+        
+        <script type="text/javascript" src="sync.js"></script>
+    	<form class="syncForm" method="post" action="" enctype="multipart/form-data">
+        	
+            <!--<p>My Library: <span class="libraryURL"></span></p>-->
+            
+            <div data-role="fieldcontain">
+                <label for="repTo" class="sendTo">Send all library items to: (URL of an online library with username and password included, for example https://username:password@example.com/library)</label>
+                <input type="text" name="repTo" id="repTo" class="repURL" placeholder="http://example.com/library" data-inline="true" />
+                <span class="sendToField"><input data-inline="true" type="submit" data-theme="b" class="submitRepTo" value="Send" /></span>
+                <label for="continuousRepTo"></label>
+                <select name="continuousRepTo" id="continuousRepTo" data-role="slider">
+                    <option value="once" class="once">Once</option>
+                    <option value="continuous" class="continuously">Continuously</option>
+                </select>
+            </div> 
+            
+            <br />
+            <br />
+            <p class="or"><strong>OR</strong></p>
+            <br />
+            <br />
+            
+            <div data-role="fieldcontain">
+                <label for="repFrom" class="getFrom">Get all library items from: </label>
+                <input type="text" name="repFrom" id="repFrom" class="repURL" placeholder="http://example.com/library" data-inline="true" />
+                <span  class="getFromField"><input type="submit" data-inline="true" data-theme="b" class="submitRepFrom" value="Get" /></span>
+                <label for="continuousRepTo"></label>                
+                <select name="continuousRepFrom" id="continuousRepFrom" data-role="slider">
+                    <option value="once" class="once">Once</option>
+                    <option value="continuous" class="continuously">Continuously</option>
+                </select> 
+            </div>
+            <br />
+            
+            <div data-role="fieldcontain" id="syncInstructions">
+            <hr /><h2>Instructions</h2><p>To <strong>send</strong> all of your library items to another online library, provide the URL to the other online library with their online username and password (for example, https://onlineusername:password@example.com/otherlibrary), indicate if you want to continually send all updates of your items to the other library or if you only want to send your items once, and then click Send.</p><p>To <strong>get</strong> all items from another library, provide the URL to the other online library (for example, http://example.com/otherlibrary), indicate if you want to continuously get all updates of the library or if you only want to get items once, and then click Get.</p><p>To <strong>fully syncronize</strong> your library with the library of a friend, get all items from their library continuously, and have them do the same with your library. Now both libraries will always remain identical, and you will receive automatic updates when your friend makes changes to their library, and they will receive automatic updates when you make changes to your library.</p>
+            </div>
+            <!-- <p id="serverResponse"></p> -->
+        </form>
+        
+	</div> 
+    
+    
+	<div data-role="footer">
+        <h4><a href="http://thelittlelibrary.com">thelittlelibrary.com</a></h4> 
+    </div>
+</div>
+</body>
+</html>

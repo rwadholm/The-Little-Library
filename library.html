@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Little Library</title>
+<link rel="stylesheet" href="jqm.css" />
+<script type="text/javascript" src="json2.js"></script>
+<script type="text/javascript" src="sha1.js"></script>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="jquery.couch.js"></script>
+<script type="text/javascript" src="jquery.form.js"></script>
+<script type="text/javascript" src="jquery.couchapp.js"></script>
+<script type="text/javascript" src="jqm.js"></script>
+<script type="text/javascript" src="library.js"></script>
+</head>
+<body>
+<div data-role="page" id="library">
+	<div data-role="header">
+    	<a href="index.html" rel="external" data-rel="back" data-role="button" data-icon="arrow-l" class="backBtn">Back</a>
+    	<h1>The Little Library</h1>               
+        <div class="ui-btn-right">
+        	<a href="options.html" data-role="button" data-icon="gear" data-rel="dialog" data-iconpos="notext" data-transition="pop" rel="external" class="optionsBtn">Options</a>
+        </div>
+    </div>
+    
+  
+	<div data-role="content" class="content">
+        
+        <ul class="listedItems" data-role="listview" data-split-icon="gear" data-split-theme="d" data-filter="true">
+        	<li data-theme="b"><a href="settings.html" data-split-icon="plus" rel="external" class="addFile"><h3>Add File</h3></a></li>
+            
+            
+            <script type="text/javascript">
+				$('div#library').live("pageshow", function() {
+					
+					$('.addFile h3').text(libLang.addFile);
+					$('.ui-input-search input').attr({'placeholder': libLang.filter});
+					  
+  					$('ul.listedItems li').css({'display':'none'});
+    				$.mobile.showPageLoadingMsg();
+					// alert($('#home ul.homeList li').text());
+					if ($('#library ul.listedItems li:nth-child(2)').text() == "" || !$('#library ul.listedItems li:nth-child(2)')){
+						
+						
+						var itemType = $('#library').getParameter('type');
+						
+						$('a.addFile').attr({'href': 'settings.html?id=add&type='+ itemType});
+						
+						$('ul.listedItems').listShow(itemType);
+						$('ul.listedItems li').fadeIn();
+					};
+					$.mobile.hidePageLoadingMsg(); 
+				});
+				
+			</script>
+        </ul>
+			
+        </ul>
+        
+    </div> 
+    
+    
+	<div data-role="footer">
+        <h4><a href="http://thelittlelibrary.com">thelittlelibrary.com</a></h4> 
+    </div>
+</div>
+</body>
+</html>

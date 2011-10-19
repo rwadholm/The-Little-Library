@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="pragma" content="no-cache" />
+<title>The Little Library</title>
+<link rel="stylesheet" href="jqm.css" />
+<script type="text/javascript" src="json2.js"></script>
+<script type="text/javascript" src="sha1.js"></script>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="jquery.couch.js"></script>
+<script type="text/javascript" src="jquery.form.js"></script>
+<script type="text/javascript" src="jquery.couchapp.js"></script>
+<script type="text/javascript" src="jqm.js"></script>
+<script type="text/javascript" src="library.js"></script>
+</head>
+<body>
+<div data-role="page" id="settings">
+	<div data-role="header">
+    	<h1>Add</h1>
+        <div class="ui-btn-right">
+        	<!--<a href="#options" data-role="button" data-icon="gear" data-rel="dialog" data-iconpos="notext" data-transition="pop">Options</a>-->
+            <a href="index.html" rel="external" data-role="button" data-icon="home" data-iconpos="notext" class="homeBtn">Home</a>
+        </div>
+    </div>
+	<div data-role="content">
+    <script type="text/javascript" src="settings.js"></script>
+    	<form class="settingsForm" method="post" action="" enctype="multipart/form-data">
+        	
+            <div data-role="fieldcontain" class="deleteButton">
+                <label for="delete" class="deleteLabel">Delete</label>
+                <input type="checkbox" name="delete" id="delete" value="Yes" />
+            </div>
+            <div data-role="fieldcontain">
+                <label for="title" class="titleLabel">Title</label>
+                <input type="text" name="title" id="title" value="" />
+            </div>
+            <div data-role="fieldcontain">
+                <label for="author" class="authorLabel">Author</label>
+                <input type="text" name="author" id="author" value=""  />
+            </div>
+            <div data-role="fieldcontain">
+                <label for="description" class="descriptionLabel">Description</label>
+                <textarea name="description" id="description"></textarea>
+            </div>
+            <div data-role="fieldcontain">
+                <label for="date" class="dateLabel">Date</label>
+                <input type="text" name="date" id="date" value="" />
+            </div>
+            
+            <div data-role="fieldcontain">
+            	<label for="upload" id="uploadLabel" class="fileLabel" style="width: 20%; display: inline-block; margin: 0 2% 0 0;">File</label>
+                <!--<button id="upload" name="upload" data-inline="true">Upload New File</button>-->
+                <input type="file" name="_attachments" id="_attachments" />
+            </div>
+            
+            <div data-role="fieldcontain" class="finalField">
+                <input type="hidden" name="filename" id="filename" value="" />
+                <input type="hidden" name="_id" id="_id" value="" />
+                <input type="hidden" name="_rev" id="_rev" value="" />
+                <input type="submit" data-theme="b" class="Submit" value="Submit" />
+            </div>
+            <!-- <p id="serverResponse"></p> -->
+        </form>
+    </div> 
+</div>
+</body>
+</html>
