@@ -94,16 +94,9 @@ jQuery.fn.createOnlineDB = function(username, password){
 				window.location.replace("index.html");
 			},
 			success: function(onlineDB){
-<<<<<<< HEAD
 				
 				// If setting up onlineDB was successful
 				if (onlineDB){
-=======
-				secureOnlineDB = 'https://'+ onlineDB +':'+ password +'@'+ onlineBase +'/'+ onlineDB;
-				
-				// If setting up onlineDB was successful
-				if (onlineDB != "" /*&& onlineDB.length <= 60*/){
->>>>>>> 658ad2498586f0e4d49b2f99e4c075879493449b
 					
 					currentRev = userInfo._rev;
 					
@@ -117,7 +110,6 @@ jQuery.fn.createOnlineDB = function(username, password){
 						"salt":saltEnc,
 						"type":"user",
 						"roles":[username]
-<<<<<<< HEAD
 					}, {
 						success: function(resp) { 
 						
@@ -126,38 +118,6 @@ jQuery.fn.createOnlineDB = function(username, password){
 							};
 						}
 					});
-=======
-					});
-					
-					// Replicate from templateDB to local library
-					$.ajax({
-						url: "/_replicate",
-						type: "POST",
-						data: JSON.stringify({"source": templateDB, "target": homeDB, "continuous":true}),
-						contentType:"application/json",
-						error: function(){
-							alert(libLang.noSyncOnline); // Get text for language
-							window.location.replace("index.html");
-						}
-					});
-					
-					// Replicate to new onlineDB from local library
-					$.ajax({
-						url: "/_replicate",
-						type: "POST",
-						data: JSON.stringify({"source": homeDB, "target": secureOnlineDB, "continuous":true}),
-						contentType:"application/json",
-						success: function(){
-							alert(libLang.createSync); // Get text for language
-							window.location.replace("index.html");
-						},
-						error: function(){
-							alert(libLang.noSyncOnline); // Get text for language
-							window.location.replace("index.html");
-						}
-					});
-					
->>>>>>> 658ad2498586f0e4d49b2f99e4c075879493449b
 				}
 				else {
 					alert(libLang.noOnline);
