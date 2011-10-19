@@ -1,11 +1,16 @@
 # The Little Library
+
+### Description & Installation
+
 The Little Library is an open source application that allows you to upload, store, and share creative commons licensed content across computers and digital devices, offline and in the cloud. The Little Library was built as a peer-to-peer sharing distributed platform for storing/sharing Open Licensed content (videos, audio, books, notes, courses, and pictures) for use in educational settings around the world, where offline learning libraries, and automated peer-to-peer replication of content will hopefully help to make constructivist forms of learning more widespread. 
 
 The Little Library is built on CouchDB, JQuery, and JQuery Mobile, along with a small PHP proxy, and uses Mikeal's CouchApp Takeout for installation. 
 
 To try it out, just go to: http://library.ic.tl/library/_design/takeout/install.html
 
-Or if you don't like easy installations and you'd rather work for it, you can install your own CouchDB and Little Library by doing the following:
+### More Complex Installation
+
+If you don't like easy installations and you'd rather work for it, you can install your own CouchDB and Little Library by doing the following:
 
 1.  Download a version of CouchDB above 1.3 from http://www.couchbase.com/downloads/ or grab the latest (>=1.1) official Apache CouchDB at http://couchdb.apache.org/downloads.html and install it.
 
@@ -38,6 +43,8 @@ Click on the "Replicate" button.
 13.	Sign up with the same username and password you chose earlier (username can contain only lowercase letters and numbers, password should begin with a letter).
 
 From there, you can add content to the different categories in your library. Anyone can grab content from your library with just your online database URL (you'll find this URL on the about.html page in your library), and can share content with you by sharing their URL. But only you can edit your content. You can use the library to sync two or more accounts as well. Just go to sync from someone else's library (set to continuous sync), and ask them sync from yours (set to continuous sync). Now if either of you make any changes to your online or offline libraries, the other libraries will be synced as soon as all libraries are connected via the internet again. If there is a conflict between two different updates, the earliest update will win (and the other will be saved as a previous version). 
+
+### Build Your Own Little Library Based Application
 
 If you want to build your own Little Library based application, feel free to. All of the software is released under MIT, Apache 2.0, and/or GPL licenses. 
 
