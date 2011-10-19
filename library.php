@@ -19,7 +19,11 @@ $adminPassword = "putAdminPasswordHere"; // Change these to flat file on root po
 $options['host'] = "example.com"; // Location of all onlineDB's
 $options['port'] = 5984; 
 
+<<<<<<< HEAD
 $templateDB = "library"; // Location of the DB that will serve as a template
+=======
+$templateDB = "example.com/library"; // Location of the DB that will serve as a template
+>>>>>>> 658ad2498586f0e4d49b2f99e4c075879493449b
 
 $couch = new CouchSimple($options); // See if we can make a connection
 
@@ -32,10 +36,15 @@ if($username == "" || $password == "" || $salt == ""){
 else {
 	
 	// Get a list of all databases in CouchDb
+<<<<<<< HEAD
 	$resp = $couch->send("GET", "/_all_dbs");
 	var_export($resp, true);
 	$checkForDB = preg_match('/"' . $username . '"/', $resp);
 	
+=======
+	$resp = $couch->send("GET", "/_all_dbs");  
+	$checkForDB = preg_match('/"' . $username . '"/', $resp);
+>>>>>>> 658ad2498586f0e4d49b2f99e4c075879493449b
 	 
 	// If there is already an onlineDB with their username, iterate numerically (rwadholm1, rwadholm2, etc.)
 	// until their onlineDB name is unique.
@@ -48,11 +57,18 @@ else {
 	}
 	
 	// Create a new database
+<<<<<<< HEAD
 	$resp1 = $couch->send("PUT", "/" . $onlineDB); 
 	var_export($resp1, true);
 	 
 	// Create a new user account with all credentials for the new database
 	$resp2 = $couch->send("PUT", "/_users/org.couchdb.user%3A" . $onlineDB, '{
+=======
+	$resp = $couch->send("PUT", "/" . $onlineDB); 
+	
+	// Create a new user account with all credentials for the new database
+	$resp = $couch->send("PUT", "/_users/org.couchdb.user%3A" . $onlineDB, '{
+>>>>>>> 658ad2498586f0e4d49b2f99e4c075879493449b
 		"_id":"org.couchdb.user:' . $onlineDB . '",
 		"name": "' . $onlineDB . '",
 		"password_sha": "' . $password . '",
@@ -60,6 +76,7 @@ else {
 		"onlineDB": "' . $onlineDB . '",
 		"roles": ["' . $onlineDB . '"],
 		"type": "user"
+<<<<<<< HEAD
 	}');  
 	var_export($resp2, true);
 	
@@ -71,6 +88,18 @@ else {
 	// Create a JSON response that gives the new onlineDB name
 	echo $onlineDB;
 }	 	 
+=======
+	}'); 
+	
+	
+	// Create a new replication document in the replicator db with that is named the same as the username
+	$resp = $couch->send("POST", "/_replicator", '{"_id": "' . $username . '","target":"' . $onlineDB . '","source":"library", "user_ctx":{"name":"' . $adminUsername . '","roles":["_admin"]},"continuous": true}');
+	
+	
+	// Create a JSON response that gives the new onlineDB name
+	echo $onlineDB;
+}	 
+>>>>>>> 658ad2498586f0e4d49b2f99e4c075879493449b
 
 
 

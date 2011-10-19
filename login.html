@@ -73,6 +73,13 @@
 									
 									sessionStorage.setItem("current",password);
 									
+<<<<<<< HEAD
+=======
+									
+									
+									
+									
+>>>>>>> 658ad2498586f0e4d49b2f99e4c075879493449b
 									// Check if user is accessing online library
 									if (onlineBase != window.location.host){
 									
@@ -84,6 +91,7 @@
 											if (userOnlineDB == "" || userOnlineDB == "undefined" || userOnlineDB == null){
 												$('div').createOnlineDB(username,password);
 											}
+<<<<<<< HEAD
 											else { 
 												
 												// If user does have online library already, set up syncing
@@ -122,6 +130,52 @@
 														}
 													});
 												/*});*/
+=======
+											else {
+												// else 
+												
+												onlineHomeDB = "https://"+ userOnlineDB +":"+ password +"@"+ onlineBase +"/"+ userOnlineDB;
+												homeDB = "http://"+ username +":"+ password +"@"+ dbURL[0] +"/"+ homeURL;
+												
+												// Replicate from templateDB to local library
+												$.ajax({
+													url: "/_replicate",
+													type: "POST",
+													data: JSON.stringify({"source": templateDB, "target": homeDB, "continuous":true}),
+													contentType:"application/json"
+												});
+												
+												// Replicate to onlineDB
+												$.ajax({
+													url: "/_replicate",
+													type: "POST",
+													async: false,
+													data: JSON.stringify({"source": homeDB, "target": onlineHomeDB, "continuous":true}),
+													contentType:"application/json",
+													error: function(){
+														alert(libLang.noSyncOnline); // Get text for langauge
+														window.location.replace("index.html");
+													},
+													success: function(){
+														
+														// Replicate from onlineDB
+														$.ajax({
+															url: "/_replicate",
+															type: "POST",
+															async: false,
+															data: JSON.stringify({"source": onlineHomeDB, "target": homeDB, "continuous":true}),
+															contentType:"application/json",
+															success: function(){
+																window.location.replace("index.html");
+															},
+															error: function(){
+																alert(libLang.noSyncOnline); // Get text for langauge
+																window.location.replace("index.html");
+															}
+														});
+													}
+												});
+>>>>>>> 658ad2498586f0e4d49b2f99e4c075879493449b
 											};
 										});
 									}
@@ -184,6 +238,7 @@
 							$.ajax({
 								url: "/_config/couchdb/delayed_commits",
 								type: "PUT",
+<<<<<<< HEAD
 								data: JSON.stringify("false"),
 								contentType:"application/json",
 								success: function(response){
@@ -260,6 +315,120 @@
 											}
 										});
 									};
+=======
+								async: false,
+								data: JSON.stringify("false"),
+								contentType:"application/json"
+							});
+							
+							// Change automatic logout from 10 minutes to 100 minutes
+							$.ajax({
+								url: "/_config/couch_httpd_auth/timeout",
+								type: "PUT",
+								async: false,
+								data: JSON.stringify("60000"),
+								contentType:"application/json"
+							});
+							
+							// Set up user as database admin
+							$.ajax({
+								url: "/_config/admins/"+ username,
+								type: "PUT",
+								async: false,
+								data: JSON.stringify(password),
+								contentType:"application/json",
+								success: function(){
+									
+									$.couch.login({
+										"name": username, 
+										"password": password,
+										success: function(){
+									
+										// If user has no previous library, create one
+										if (connectOnline != "Yes"){
+												
+											if (acceptTerms != "Yes") {
+												alert(libLang.acceptTermsNo); // Get text for langauge
+												return;
+											}
+											
+											sessionStorage.setItem("current",password);
+											
+											$('.loginForm').signupForm(username, password);	
+											
+										}
+										
+										// Else, setup user and local library, and replicate with specified online library
+										else {
+											
+											onlineUser = $('input#onlineUser').val();
+											
+											if (!onlineUser || onlineUser.length == 0) {
+												alert(libLang.validOnlineUser); // Get text for langauge
+												return;
+											}
+											
+											$.couch.signup({"name": username,"onlineDB":onlineUser,"roles":[username]}, password, {
+												success: function(){ 
+													
+													$.mobile.pageLoading();
+													
+													sessionStorage.setItem("current",password);
+													
+													secureOnlineDB = 'https://'+ onlineUser +':'+ password +'@'+ onlineBase +'/'+ onlineUser;
+													secureHomeDB = "http://"+ username +":"+ password +"@"+ dbURL[0] +"/"+ homeURL;
+								
+														
+													// Replicate from templateDB to local library
+													$.ajax({
+														url: "/_replicate",
+														type: "POST",
+														async: false,
+														data: JSON.stringify({"source": secureOnlineDB, "target": secureHomeDB, "continuous":true}),
+														contentType:"application/json",
+														error: function(){
+															alert(libLang.noSyncOnline); // Get text for language
+															window.location.replace("index.html");
+														}
+													});
+													
+													// Replicate to onlineDB
+												$.ajax({
+													url: "/_replicate",
+													type: "POST",
+													async: false,
+													data: JSON.stringify({"source": secureHomeDB, "target": secureOnlineDB, "continuous":true}),
+													contentType:"application/json",
+													error: function(){
+														alert(libLang.noSyncOnline); // Get text for langauge
+														window.location.replace("index.html");
+													},
+													success: function(){
+														
+														// Replicate from onlineDB
+														$.ajax({
+															url: "/_replicate",
+															type: "POST",
+															async: false,
+															data: JSON.stringify({"source": secureOnlineDB, "target": secureHomeDB, "continuous":true}),
+															contentType:"application/json",
+															success: function(){
+																window.location.replace("index.html");
+															},
+															error: function(){
+																alert(libLang.noSyncOnline); // Get text for langauge
+																window.location.replace("index.html");
+															}
+														});
+													}
+												});
+												}
+											});
+								
+										};
+										}
+									});
+>>>>>>> 658ad2498586f0e4d49b2f99e4c075879493449b
 								}
 							});
 						});

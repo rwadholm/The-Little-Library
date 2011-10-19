@@ -42,6 +42,7 @@ $('div#sync').live("pageshow", function() {
 		$.ajax({
 			url: "/_replicator",
 			type: "POST",
+<<<<<<< HEAD
 			data: JSON.stringify({"source": homeURL, "target": repTo, "continuous":continuousRep}),
 			contentType:"application/json",
 			success: function(resp){
@@ -49,6 +50,14 @@ $('div#sync').live("pageshow", function() {
 					alert(libLang.synced);
 					window.location.replace("index.html");
 				};
+=======
+			async: true,
+			data: JSON.stringify({"source": homeURL, "target": repTo, "continuous":continuousRep}),
+			contentType:"application/json",
+			success: function(){
+				alert(libLang.synced);
+				window.location.replace("index.html");
+>>>>>>> 658ad2498586f0e4d49b2f99e4c075879493449b
 			}
 		});
 	});
@@ -80,6 +89,7 @@ $('div#sync').live("pageshow", function() {
 		$.ajax({
 			url: "/_replicator",
 			type: "POST",
+<<<<<<< HEAD
 			data: JSON.stringify({"source": repFrom, "target": "http://"+ homeUser +":"+ sessionStorage.getItem("current") +"@"+ window.location.host +"/"+ homeURL, "user_ctx": {"name": homeUser, "roles":["_admin", homeUser]}, "continuous":continuousRep}),
 			contentType:"application/json",
 			success: function(resp){
@@ -87,6 +97,14 @@ $('div#sync').live("pageshow", function() {
 					alert(libLang.synced);
 					window.location.replace("index.html");
 				}
+=======
+			async: true,
+			data: JSON.stringify({"source": repFrom, "target": "http://"+ homeUser +":"+ sessionStorage.getItem("current") +"@"+ window.location.host +"/"+ homeURL, "user_ctx": {"name": homeUser}, "continuous":continuousRep}),
+			contentType:"application/json",
+			success: function(){
+				alert(libLang.synced);
+				window.location.replace("index.html");
+>>>>>>> 658ad2498586f0e4d49b2f99e4c075879493449b
 			}
 		});
 	});
