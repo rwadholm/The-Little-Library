@@ -22,11 +22,7 @@ If you don't like easy installations and you'd rather work for it, you can insta
 
 5.	In a Web browser, go to the following address: http://127.0.0.1:5984/_utils/replicator.html 
 
-6.	Replicate changes from: Remote Database "http://library.ic.tl/library" (Paste this address into the box)
-
-Replicate changes to: Local Database "library" (Paste the word library into the box)
-
-Click on the "Replicate" button.
+6.	Replicate changes from: Remote Database "http://library.ic.tl/library" (Paste this address into the box), Replicate changes to: Local Database "library" (Paste the word library into the box), Click on the "Replicate" button.
 
 7.	Click on "Overview" on the top left.
 
