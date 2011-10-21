@@ -4,7 +4,7 @@
 
 The Little Library is an open source application that allows you to upload, store, and share creative commons licensed content across computers and digital devices, offline and in the cloud. The Little Library was built as a peer-to-peer sharing distributed platform for storing/sharing Open Licensed content (videos, audio, books, notes, courses, and pictures) for use in educational settings around the world, where offline learning libraries, and automated peer-to-peer replication of content will hopefully help to make constructivist forms of learning more widespread. 
 
-The Little Library is built on CouchDB, JQuery, and JQuery Mobile, along with a small PHP proxy, and uses Mikeal's CouchApp Takeout for installation. 
+The Little Library is built on CouchDB, JQuery, and JQuery Mobile, along with a small PHP proxy, and uses Ryan Ramage's CouchApp Takeout (https://github.com/ryanramage/couchapp-takeout) for installation. 
 
 To try it out, just go to: http://library.ic.tl/library/_design/takeout/install.html
 
