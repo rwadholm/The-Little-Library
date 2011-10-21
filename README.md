@@ -6,7 +6,7 @@ The Little Library is an open source application that allows you to upload, stor
 
 The Little Library is built on CouchDB, JQuery, and JQuery Mobile, along with a small PHP proxy, and uses Ryan Ramage's CouchApp Takeout (https://github.com/ryanramage/couchapp-takeout) for installation. 
 
-To try it out, just go to: http://library.ic.tl/library/_design/takeout/install.html
+To try it out, just go to: http://littlelibrary.tk
 
 ### More Complex Installation
 
