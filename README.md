@@ -45,3 +45,7 @@ From there, you can add content to the different categories in your library. Any
 If you want to build your own Little Library based application, feel free to. All of the software is released under MIT, Apache 2.0, and/or GPL licenses. 
 
 You'll just need to change the variables in the top of the library.js file (lines 10, 11, 12 & 13), and several variables in the two php files: library.php (lines 16, 17, 19, 22, 86 & 87) and  version.php (lines 17, 18, 20, 23, 97, & 98). Then you'll put library.php onto a server, set up a couchdb online somewhere and locally. On your couchdb, you can either just replicate with The Little Library template at library.ic.tl/library, or you can upload all of these files (other than library.php and version.php) into a design document and build away (check out the validate_doc_update, views, etc. in the library.ic.tl/librar/_design/library document to see how this is currently implemented). 
+
+### Uninstall
+
+Check out the GitHub Little Library wiki (https://github.com/rwadholm/The-Little-Library/wiki/Delete-Your-Little-Library-Locally) for instructions on uninstalling the Little Library. Feel free to make any changes you deem necessary to the wiki to make it more accurate and helpful. 
