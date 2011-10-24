@@ -38,6 +38,8 @@ If you don't like easy installations and you'd rather work for it, you can insta
 
 13.	Sign up with the same username and password you chose earlier (username can contain only lowercase letters and numbers, password should begin with a letter).
 
+## After Installation, Then What?
+
 From there, you can add content to the different categories in your library. Anyone can grab content from your library with just your online database URL (you'll find this URL on the about.html page in your library), and can share content with you by sharing their URL. But only you can edit your content. You can use the library to sync two or more accounts as well. Just go to sync from someone else's library (set to continuous sync), and ask them sync from yours (set to continuous sync). Now if either of you make any changes to your online or offline libraries, the other libraries will be synced as soon as all libraries are connected via the internet again. If there is a conflict between two different updates, the earliest update will win (and the other will be saved as a previous version). 
 
 ## Uninstallation
