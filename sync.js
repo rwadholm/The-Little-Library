@@ -38,16 +38,21 @@ $('div#sync').live("pageshow", function() {
 		
 		$.mobile.showPageLoadingMsg();
 		
+		secureHome = "http://"+ homeUser +":"+ sessionStorage.getItem('current') +"@"+ window.location.host +"/"+ homeURL;
 		
 		$.ajax({
-			url: "/_replicator",
+			url: "/_replicate",
 			type: "POST",
-			data: JSON.stringify({"source": homeURL, "target": repTo, "continuous":continuousRep}),
+			data: JSON.stringify({"source": secureHome, "target": repTo, "filter": "library/no_design", "continuous":continuousRep}),
 			contentType:"application/json",
-			success: function(resp){
-				if(resp){
+			error: function(){
+				alert(libLang.noSyncOnline); 
+				$.mobile.hidePageLoadingMsg();
+			},
+			success: function(message){
+				if(message){
 					alert(libLang.synced);
-					window.location.replace("index.html");
+					$.mobile.hidePageLoadingMsg();
 				};
 			}
 		});
@@ -60,7 +65,6 @@ $('div#sync').live("pageshow", function() {
   		event.preventDefault();
 		
 		var repFrom = $('.syncForm input#repFrom').val();
-		
 		
 		// Make sure the URL is filled in
 		if (repFrom == ''){
@@ -77,18 +81,23 @@ $('div#sync').live("pageshow", function() {
 		
 		$.mobile.showPageLoadingMsg();
 		
+		secureHome = "http://"+ homeUser +":"+ sessionStorage.getItem('current') +"@"+ window.location.host +"/"+ homeURL;
+		
 		$.ajax({
-			url: "/_replicator",
+			url: "/_replicate",
 			type: "POST",
-			data: JSON.stringify({"source": repFrom, "target": "http://"+ homeUser +":"+ sessionStorage.getItem("current") +"@"+ window.location.host +"/"+ homeURL, "user_ctx": {"name": homeUser, "roles":["_admin", homeUser]}, "continuous":continuousRep}),
+			data: JSON.stringify({"source": repFrom, "target": secureHome, "userCtx": {"name": homeUser, "roles":["_admin", homeUser]}, "continuous":continuousRep}),
 			contentType:"application/json",
-			success: function(resp){
-				if(resp){
+			error: function(){
+				alert(libLang.noSyncOnline); 
+				$.mobile.hidePageLoadingMsg();
+			},
+			success: function(message){
+				if(message){
 					alert(libLang.synced);
-					window.location.replace("index.html");
-				}
+					$.mobile.hidePageLoadingMsg();
+				};
 			}
 		});
 	});
-	
 });
