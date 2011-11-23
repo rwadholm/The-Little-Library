@@ -48,7 +48,7 @@
 							if (userOnlineDB != "" && userOnlineDB != "undefined" && userOnlineDB != null && password != "" && password != null){
 								
 								
-								onlineHomeDB = "https://"+ userOnlineDB +":"+ password +"@"+ onlineBase +"/"+ userOnlineDB;
+								onlineHomeDB = "http://"+ userOnlineDB +":"+ password +"@"+ onlineBase +"/"+ userOnlineDB;
 								secureHomeDB = "http://"+ homeUser +":"+ password +"@"+ dbURL[0] +"/"+ homeURL;
 								
 								
@@ -56,7 +56,7 @@
 								$.ajax({
 									url: "/_replicate",
 									type: "POST",
-									data: JSON.stringify({"source": secureHomeDB, "target": onlineHomeDB, "filter": "library/no_design", "userCtx":{"name": userOnlineDB, "db_name": userOnlineDB}}),
+									data: JSON.stringify({"source": secureHomeDB, "target": onlineHomeDB, "filter": "library/no_design", "create_target": true, "userCtx":{"name": userOnlineDB, "db_name": userOnlineDB, "roles": [userOnlineDB]}}),
 									contentType:"application/json"
 									
 								});

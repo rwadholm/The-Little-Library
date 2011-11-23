@@ -26,8 +26,11 @@ $('div#settings').live("pageshow", function() {
 	// If user has clicked on add button, don't look for any JSON files to fill in form and remove delete button
 	$('.deleteButton').fadeOut();
 	
-	
-	// $('#_attachments').fadeOut();
+	if (itemType == 'notes'){
+		
+		$('.settingsForm .descriptionLabel').text(libLang[itemType]);
+		$('.settingsForm #description').attr('style','height: 250px;');
+	}
 	
 	// Fill out the form with data if it exists
 	if (itemID != 'add'){
@@ -36,6 +39,11 @@ $('div#settings').live("pageshow", function() {
 	};
 	
 	
+	/*// Show progress of uploads
+	$('input[type="file"]').change(function(){
+		$(this).after('<progress max="100" value="50">50</progress>');
+	});*/
+	
 	// When user clicks on the form submit button, information is saved to the database
 	$('input.Submit').click(function(event){
 		
@@ -43,5 +51,24 @@ $('div#settings').live("pageshow", function() {
 		
 		$('.settingsForm').sendForm(itemID, itemType);
 	
+	});
+	
+	// Allow users to delete single file attachments to the item
+	$('a.deleteThisFile').live('click', function(event){
+		
+		event.preventDefault();
+		
+		fileURL = $(this).attr('rel');
+		
+		$(this).parent().fadeOut();
+		
+		$.getJSON("/"+ homeURL +"/"+ itemID, function(revData) {
+			itemRev = revData._rev;
+			$.ajax({
+				url: '/'+ homeURL +'/'+ itemID +'/'+ fileURL +'?rev='+ itemRev,
+				dataType: 'json',
+				type: 'DELETE'
+			});
+		});
 	});
 });

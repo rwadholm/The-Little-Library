@@ -64,7 +64,7 @@ jQuery.fn.libraryAuth = function(){
 			window.location.replace("login.html");
 		}
 		
-		$('.ui-footer h4').append(' - '+ homeUser);
+		$('.ui-footer h4').prepend(homeUser +'<br />');
 		
 	
 	// If not logged in, go to login/signup page
@@ -152,7 +152,7 @@ jQuery.fn.signupForm = function(username, password){
 jQuery.fn.numShow = function(numlist) {
 	// Get number of items from JSON
 	$.getJSON('/'+ homeURL +'/_design/library/_view/'+ numlist +'?callback=', function(json) {
-		$('.'+ numlist +'Total').html(json.total_rows).addClass('ui-li-count ui-btn-up-c ui-btn-corner-all');
+		$('.'+ numlist +'Total').addClass('ui-li-count ui-btn-up-c ui-btn-corner-all').html(json.total_rows);
 		
 	});
 	
@@ -191,7 +191,7 @@ jQuery.fn.categoryShow = function() {
 			}
 			// Don't list the languages views
 			if (singleView != "languages" && singleView != "currentLang") {
-				$('ul.homeList').append('<li><a href="library.html?type='+ singleView +'" rel="external" data-transition="slide">'+ translatedSingleView +'<span class="'+ singleView +'Total"></span></a></li>');
+				$('ul.homeList').append('<li class="ui-li-has-count"><a href="library.html?type='+ singleView +'" rel="external" data-transition="slide">'+ translatedSingleView +'<span class="'+ singleView +'Total"></span></a></li>');
 				$('.'+ singleView +'Total').numShow(singleView);
 				
 				$('#home ul.homeList').listview('refresh');
@@ -244,41 +244,51 @@ jQuery.fn.listShow = function(category) {
 					itemDate = ('('+ singleItem.key.date +')');
 				}
 				
+				fileURL = '';
+				settingsURL = 'settings.html?id='+ singleItem.key._id +'&amp;type='+ singleItem.key.type;
 				
 				// Get the first filename by iterating over attachments
 				for	(var filename in singleItem.key._attachments){
-					break;
+					// Automatically make index.html the home page if it exists
+					if (filename == "index.html" || filename == "index.htm" || filename == "default.html" || filename == "default.htm"){
+						fileURL = '/'+ homeURL +'/'+ singleItem.key._id +'/'+ filename;
+						break;
+					}
 				};
 				
-				fileURL = '/'+ homeURL +'/'+ singleItem.key._id +'/'+ filename;
-				settingsURL = 'settings.html?id='+ singleItem.key._id +'&amp;type='+ singleItem.key.type;
-				
-				itemThumb = '';
-				
-				// If no file is attached to the item, make the link go to the settings page
-				if (!filename || filename == '' || filename == null || filename == 'undefined'){
-					fileURL = settingsURL;
+				// If there is no index page, make a link to the last attachment if it exists
+				if (!fileURL || fileURL == '' || fileURL == null || fileURL == 'undefined'){
+					for	(var filename in singleItem.key._attachments){
+						fileURL = '/'+ homeURL +'/'+ singleItem.key._id +'/'+ filename;
+						break;
+					}
+					
+					// If there are no attachments, open the settings page
+					if (!filename || filename == '' || filename == null || filename == 'undefined'){
+						fileURL = settingsURL;
+					}
 				}
-				else {
-					// Create an thumbnail for items that have images
+				
+				
+				// Create a thumbnail for items that have images
+				itemThumb = '';
+				// File formats to expect for thumbnails
+				imageArray = {'jpg':'jpg','gif':'gif','png':'png','jpeg':'jpeg','JPG':'JPG','GIF':'GIF','PNG':'PNG','JPEG':'JPEG','BMP':'BMP'}; 
+				// Get the file extension of the current attachment
+				function getFileExtension(newFiles) {
+					return newFiles.split('.').pop();
+				};
+				// Iterate through the attachments and create a thumbnail of the last image
+				for(var filename in singleItem.key._attachments){ 
+					newFile = getFileExtension(filename); 
 					
-					// File formats to expect for thumbnails
-					imageArray = {'jpg':'jpg','gif':'gif','png':'png','jpeg':'jpeg','JPG':'JPG','GIF':'GIF','PNG':'PNG','JPEG':'JPEG','BMP':'BMP'}; 
-					
-					function getFileExtension(newFiles) {
-						return newFiles.split('.').pop();
-					};
-					 
-					for(var filename in singleItem.key._attachments){ 
-						newFile = getFileExtension(filename); 
-						
-						if(imageArray[newFile]){
-							itemThumb = '<img src="/'+ homeURL +'/'+ singleItem.key._id +'/'+ filename +'" />';
-							break;
-						}
-					};
+					if(imageArray[newFile]){
+						itemThumb = '<img src="/'+ homeURL +'/'+ singleItem.key._id +'/'+ filename +'" />';
+						break;
+					}
 				};
 				
+				// Create the html for each item in the category
 				$('ul.listedItems').append('<li><a href="'+ fileURL +'" class="itemURL" rel="external">'+ itemThumb +'<h3 class="itemTitle">'+ (singleItem.key.title).replace(/(<([^>]+)>)/ig,"") +'</h3><p class="itemDetails"><strong>'+ (singleItem.key.author).replace(/(<([^>]+)>)/ig,"") +'</strong> '+ (itemDate).replace(/(<([^>]+)>)/ig,"") +'<br />'+ (singleItem.key.description).replace(/(<([^>]+)>)/ig,"") +'</p></a><a href="'+ settingsURL +'" rel="external">'+ libLang.settings +'</a></li>');
 								
 				$('ul.listedItems').listview('refresh');
@@ -337,7 +347,6 @@ jQuery.fn.formShow = function(itemID) {
 			$('.settingsForm input#filename').val(itemData.filename);
 			$('form.settingsForm').attr({"action": "/"+ homeURL + "/"+ itemData._id});
 			
-			
 			if (!itemData.filename || !itemData._attachments || itemData._attachments.length <= 0) {
 				return false;
 			}
@@ -361,9 +370,7 @@ jQuery.fn.formShow = function(itemID) {
 					/* mimeType = itemData._attachments[filename].content_type */
 					
 					fileURL = '/'+ homeURL +'/'+ itemData._id +'/'+ filename;
-					$('.settingsForm .filesList').append('<p><span data-inline="true"><strong><a href="'+ fileURL +'" rel="external">'+ filename +'</a></strong><span style="color: #999">, '+ newSize +'</span></span></p>');
-					
-					
+					$('.settingsForm .filesList').append('<p style="position:relative; border-top: 1px solid #ccc; padding-top: 10px;"><span data-inline="true"><strong><a href="'+ fileURL +'" rel="external">'+ filename +'</a></strong><span style="color: #999">, '+ newSize +'</span></span> <a title="'+ libLang.deleteLabel +' '+ filename +'" style="position:absolute; top: 2px; right: 0px; display: block;" rel="'+ filename +'" data-role="button" data-icon="delete" title="Delete" data-iconpos="notext" class="deleteThisFile ui-btn ui-btn-icon-notext ui-btn-corner-all ui-shadow ui-btn-down-c ui-btn-up-c"><span class="ui-btn-inner ui-btn-corner-all" aria-hidden="true"><span class="ui-btn-text">'+ libLang.deleteLabel +'</span><span class="ui-icon ui-icon-delete ui-icon-shadow"></span></span></a></p>');
 				};
 			}
 		};
@@ -382,8 +389,6 @@ jQuery.fn.sendForm = function(itemID, itemType) {
 	var itemRev = $('.settingsForm input#_rev').val();
 	var itemDelete = $('.settingsForm input#delete:checked').val();
 	var itemFilename = $('.settingsForm input:file').val();
-	
-	
 	
 	// Check for new uploaded file
 	if (itemFilename == undefined || itemFilename == ""){
@@ -603,6 +608,7 @@ $('div').live("pageshow", function() {
 	// Get text for language
 	//document.title = libLang.title;
 	$('a.backBtn span.ui-btn-text').text(libLang.backBtn);
+	$('h1.ui-title').text(libLang.title);
 	$('a.homeBtn').attr({'title': libLang.homeBtn});
 	$('a.homeBtn span.ui-btn-text').text(libLang.homeBtn);
 	$('a.optionsBtn').attr({'title': libLang.optionsBtn});
