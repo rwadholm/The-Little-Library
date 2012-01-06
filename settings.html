@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="pragma" content="no-cache" />
 <title>The Little Library</title>
+<link rel="icon" type="image/png" href="../../_design/takeout-settings.jnlp/icon.png" />
 <link rel="stylesheet" href="jqm.css" />
 <script type="text/javascript" src="json2.js"></script>
 <script type="text/javascript" src="sha1.js"></script>
@@ -48,7 +49,18 @@
                 <label for="date" class="dateLabel">Date</label>
                 <input type="text" name="date" id="date" value="" />
             </div>
-            
+            <div data-role="fieldcontain" class="typeField">
+            	<label for="type" class="typeLabel">Type</label>
+                <select name="type" id="type"> 
+                	<option value="books" class="select-books">Books</option>
+                	<option value="pictures" class="select-pictures">Pictures</option>
+                	<option value="videos" class="select-videos">Videos</option>
+                	<option value="audio" class="select-audio">Audio</option>
+                	<option value="documents" class="select-documents">Documents</option>
+                	<option value="notes" class="select-notes">Notes</option>
+                	<option value="courses" class="select-courses">Courses</option> 
+               </select>
+            </div>
             <div data-role="fieldcontain">
             	<label for="upload" id="uploadLabel" class="fileLabel" style="width: 20%; display: inline-block; margin: 0 2% 0 0;">File</label>
                 <!--<button id="upload" name="upload" data-inline="true">Upload New File</button>-->

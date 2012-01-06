@@ -1,0 +1,96 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="pragma" content="no-cache" />
+<title>The Little Library</title>
+<link rel="icon" type="image/png" href="../../_design/takeout-settings.jnlp/icon.png" />
+<link rel="stylesheet" href="jqm.css" />
+<script type="text/javascript" src="json2.js"></script>
+<script type="text/javascript" src="sha1.js"></script>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="jquery.couch.js"></script>
+<script type="text/javascript" src="jquery.form.js"></script>
+<script type="text/javascript" src="jquery.couchapp.js"></script>
+<script type="text/javascript" src="jqm.js"></script>
+<script type="text/javascript" src="library.js"></script>
+<style type="text/css">
+div.ui-page div.ui-content, .ui-footer {
+	max-width: 100%;
+}
+div.ui-page div.ui-content {
+	background-color: #fff;	
+}
+.ui-page .ui-header h1.ui-title {
+	color: #fff;
+	font-weight: bold;
+	font-size: 16px;
+}
+</style>
+</head>
+<body>
+<div data-role="page" id="wrapper">
+    <div data-role="header" data-theme="b">
+            <a href="index.html" rel="external" data-rel="back" data-role="button" data-icon="arrow-l" class="backBtn">Back</a>
+        <h1><strong>The Little Library</strong></h1>               
+        <div class="ui-btn-right">
+            <a href="index.html" rel="external" data-role="button" data-icon="home" data-iconpos="notext" class="homeBtn">Home</a>
+        </div>
+    </div>
+    
+	<div data-role="content" class="content">
+    <script type="text/javascript">
+    	$('div#wrapper').live("pageshow", function() {
+			
+			$.mobile.showPageLoadingMsg();
+			
+			// Get the URL parameters
+			var itemURL = $('#wrapper').getParameter('url'),
+				itemPath = $('#wrapper').getParameter('path'),
+				itemName = $('#wrapper').getParameter('name');
+			
+			// Get the domain from a url string	
+			function get_hostname(url) {
+				var m = ((url||'')+'').match(/^http:\/\/[^/]+/);
+				return m ? m[0] : null;
+			}
+			
+			// Make the title pretty (with spaces instead of URL encoded)
+			$('h1').text(unescape(itemName));
+			
+			// Use AJAX to load the new page		
+			$('.content').load(itemURL +'/'+ itemPath, function(){
+				
+				// Change all relative links to be loaded within this wrapper
+				$('.content a').each(function(){
+					href = $(this).attr('href');
+					checkHost = get_hostname(href);
+					if(checkHost == currentHost +'/' || checkHost == '' || checkHost == null){
+						$(this).attr({'href': 'wrapper.html?name='+ itemName +'&url='+ itemURL +'&path='+ href, 'rel': 'external'});
+					};
+				});
+				
+				$.mobile.hidePageLoadingMsg();
+				
+			});
+			
+			$('content a').live('click', function(e){
+						
+				e.preventDefault;
+				
+				currentURL = $(this).attr('href');
+				
+				window.location.replace(currentURL);
+				
+			});
+		});
+    </script>
+    </div> 
+    
+    <div data-role="footer">
+        <h4><a href="http://thelittlelibrary.com">thelittlelibrary.com</a></h4> 
+    </div>
+</div>
+</body>
+</html>

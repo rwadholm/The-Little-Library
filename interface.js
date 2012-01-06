@@ -6,10 +6,12 @@ $('div#interface').live("pageshow", function() {
 	// Get text for language
 	$('h1').text(libLang.interface);
 	$('.language').text(libLang.language);
+	$('.deleteLang').text(libLang.deleteLanguage);
 	$('.changeLang').text(libLang.changeLanguage);
 	$('.changeLangText').text(libLang.changeLanguageText);
 	$('.langInstructions').text(libLang.languageInstructions);
 	$('.languageForm .SubmitBtn span.ui-btn-inner').text(libLang.submitBtn);
+	$('.deleteLanguageForm .deleteBtn span.ui-btn-inner').text(libLang.deleteLabel);
 	
 	
 	// Fill dropdown with language options
@@ -17,6 +19,7 @@ $('div#interface').live("pageshow", function() {
 		url: '/'+ homeURL +'/_design/library/_view/languages?callback=',
 		dataType: 'json',
 		success: function(languagesData){
+			
 			$('select#language option').remove();
 			$.each(languagesData.rows, function(cat, rowsHere){
 				if (rowsHere.key.current == true){
@@ -25,11 +28,11 @@ $('div#interface').live("pageshow", function() {
 					
 					// Create options dropdown for current item
 					$('select#language').append('<option value="'+ rowsHere.id +'" selected="selected">'+ currentID[0] +' ('+ currentID[1] +')</option>');
-					$('.ui-select span.ui-btn-text').text(currentID[0] +' ('+ currentID[1] +')');
+					$('.languageForm .ui-select span.ui-btn-text').text(currentID[0] +' ('+ currentID[1] +')');
 					
 					// Create editing form
 					$('h3.changeLangText').append(' - <span style="color:#254F7A">'+ rowsHere.key.name +'</span>');
-					$('.ui-content').append('<form class="uiForm" method="PUT" enctype="multipart/form-data"><div id="editUI"></div><div data-theme="b" class="ui-btn ui-btn-corner-all ui-shadow ui-btn-inline ui-btn-down-b ui-btn-up-b" aria-disabled="false"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text">'+  libLang.submitBtn +'</span></span><input type="submit" id="submitEdit" data-inline="true" data-theme="b" class="submitEdit ui-btn-hidden" value="'+ libLang.submitBtn +'" aria-disabled="false" /></div></form>');
+					$('.ui-content').append('<form class="uiForm" method="PUT" enctype="multipart/form-data"><div id="editUI"></div><div data-theme="b" class="ui-btn ui-btn-corner-all ui-shadow ui-btn-inline ui-btn-up-b ui-btn-up-b" aria-disabled="false"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text">'+  libLang.submitBtn +'</span></span><input type="submit" id="submitEdit" data-inline="true" data-theme="b" class="submitEdit ui-btn-hidden" value="'+ libLang.submitBtn +'" aria-disabled="false" /></div></form>');
 					
 					$.each(rowsHere.key, function(topVariable, topValue){
 						
@@ -57,7 +60,11 @@ $('div#interface').live("pageshow", function() {
 				// If not the current language, just add drop down option
 				
 					currentID = (rowsHere.id).split('-');
+					
 					$('select#language').append('<option value="'+ rowsHere.id +'">'+ currentID[0] +' ('+ currentID[1] +')</option>');
+					
+					// Create the list of deletable languages
+					$('select#deleteLanguage').append('<option value="'+ rowsHere.id +'">'+ currentID[0] +' ('+ currentID[1] +')</option>');
 				}
 				
 			});	
@@ -66,6 +73,34 @@ $('div#interface').live("pageshow", function() {
 	});
 	
 	
+	// Delete a language file
+	$('form.deleteLanguageForm input.delete').live('click', function(event){
+		
+  		event.preventDefault();
+		
+		$.mobile.showPageLoadingMsg();
+		
+		itemID = $('.deleteLanguageForm select option:selected').val();
+		
+		if (itemID && itemID != ''){
+		
+			// Delete the language file from the library
+			$.ajax({
+				url: '/'+ homeURL +'/'+ itemID,
+				dataType: 'json',
+				success: function(data){
+			
+					$.couch.db(homeURL).removeDoc({'_id': itemID, "_rev": data._rev});
+					
+					alert(libLang.saved);
+					window.location.replace("interface.html");
+				}
+			});
+		};
+		$.mobile.hidePageLoadingMsg();
+	});
+	
+	// Functionality for the form that changes language text
 	$('form.uiForm input#submitEdit').live('click', function(event){
 		
   		event.preventDefault();
@@ -183,7 +218,7 @@ $('div#interface').live("pageshow", function() {
 		
 		$.mobile.showPageLoadingMsg();
 		
-		itemID = $('select option:selected').val();
+		itemID = $('.languageForm select option:selected').val();
 		
 		$.ajax({
 			url: '/'+ homeURL +'/_design/library/_view/currentLang?callback=',

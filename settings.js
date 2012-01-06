@@ -11,17 +11,28 @@ $('div#settings').live("pageshow", function() {
 	$('.authorLabel').text(libLang.authorLabel);
 	$('.descriptionLabel').text(libLang.descriptionLabel);
 	$('.dateLabel').text(libLang.dateLabel);
+	$('.typeLabel').text(libLang.typeLabel);
 	$('.fileLabel').text(libLang.fileLabel);
 	$('.finalField .ui-btn-text').text(libLang.submitBtn);
 	$('.Submit').val(libLang.submitBtn);
-	$('h1').text(libLang.add);
+	$('.select-books').text(libLang.books);
+	$('.select-pictures').text(libLang.pictures);
+	$('.select-videos').text(libLang.videos);
+	$('.select-audio').text(libLang.audio);
+	$('.select-documents').text(libLang.documents);
+	$('.select-notes').text(libLang.notes);
+	$('.select-courses').text(libLang.courses);
 	
 	// Get the document id and type (i.e. book, video, etc.) from the URL
-	var itemID = $('#settings').getParameter('id');	
-	var itemType = $('#settings').getParameter('type');
+	var itemID = $('#settings').getParameter('id'),
+		itemType = $('#settings').getParameter('type');
 	
 	// Set the title of the page
 	$('h1').text(libLang.add +' '+ libLang[itemType]);
+	
+	// Set the item's type/category
+	$('.settingsForm .typeField .ui-btn-text').text(libLang[itemType]);
+	$('.settingsForm select#type').val(itemType);
 	
 	// If user has clicked on add button, don't look for any JSON files to fill in form and remove delete button
 	$('.deleteButton').fadeOut();

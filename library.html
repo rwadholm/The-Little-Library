@@ -4,6 +4,7 @@
 <meta charset="utf-8"> 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Little Library</title>
+<link rel="icon" type="image/png" href="../../_design/takeout-settings.jnlp/icon.png" />
 <link rel="stylesheet" href="jqm.css" />
 <script type="text/javascript" src="json2.js"></script>
 <script type="text/javascript" src="sha1.js"></script>
@@ -47,7 +48,7 @@
 						
 						$('a.addFile').attr({'href': 'settings.html?id=add&type='+ itemType});
 						
-						$('ul.listedItems').listShow(itemType);
+						$('ul.listedItems').listShow(itemType, '/'+ homeURL, true);
 						$('ul.listedItems li').fadeIn();
 					};
 					$.mobile.hidePageLoadingMsg(); 

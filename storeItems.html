@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1"> 
+<title>The Little Library</title>
+<link rel="icon" type="image/png" href="../../_design/takeout-settings.jnlp/icon.png" />
+<link rel="stylesheet" href="jqm.css" />
+<script type="text/javascript" src="json2.js"></script>
+<script type="text/javascript" src="sha1.js"></script>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="jquery.couch.js"></script>
+<script type="text/javascript" src="jquery.form.js"></script>
+<script type="text/javascript" src="jquery.couchapp.js"></script>
+<script type="text/javascript" src="jqm.js"></script>
+<script type="text/javascript" src="library.js"></script>
+</head>
+<body>
+<div data-role="page" id="storeItem">
+	<div data-role="header" data-theme="b">
+    	<a href="index.html" rel="external" data-rel="back" data-role="button" data-icon="arrow-l" class="backBtn">Back</a>
+    	<h1><strong>Store</strong></h1>               
+        <div class="ui-btn-right">
+        	<a href="index.html" rel="external" data-role="button" data-icon="home" data-iconpos="notext" class="homeBtn">Home</a>
+        </div>
+    </div>
+    
+  
+	<div data-role="content" class="content">
+    	
+        <ul class="listedItems" data-role="listview" data-split-icon="plus" data-split-theme="b" data-filter="true">
+            
+            <script type="text/javascript">
+				$('div#storeItem').live("pageshow", function() {
+					
+					$('.ui-input-search input').attr({'placeholder': libLang.filter});
+  					$('ul.listItems li').css({'display':'none'});
+					
+    				$.mobile.showPageLoadingMsg();
+					
+					if (!$('#storeItem ul.listedItems li:nth-child(2)') || $('#storeItem ul.storeItems li:nth-child(1)').text() == ""){
+						
+						var itemType = $('#storeItem').getParameter('type');
+						var libID = $('#storeItem').getParameter('libID');
+					
+					
+						$('a.addFile').attr({'href': 'settings.html?id=add&type='+ itemType});
+						
+						$('ul.listedItems').listShow(itemType, 'http://'+ onlineBase +'/'+ libID, false);
+						$('ul.listedItems li').fadeIn();
+						
+						$('h1').text(libLang[itemType] +': '+ libLang.fromTheLibrary +' '+ libID);
+					};
+					
+					$.mobile.hidePageLoadingMsg(); 
+					
+					
+					// Replicate individual items that users want
+					$('a.usedjsonp').live('click', function(event){
+						event.preventDefault();
+						
+						$.mobile.showPageLoadingMsg();
+						
+						secureHome = "http://"+ homeUser +":"+ sessionStorage.getItem('current') +"@"+ window.location.host +"/"+ homeURL;
+						currentItemID = $(this).attr('data-library-url');
+						
+						$.ajax({
+							url: "/_replicate",
+							type: "POST",
+							data: JSON.stringify({"source": "http://"+ onlineBase +'/'+ libID, "target": secureHome, "userCtx": {"name": homeUser, "roles":["_admin", homeUser]}, "continuous":false, "doc_ids": [currentItemID]}),
+							contentType:"application/json",
+							error: function(){
+								alert(libLang.noSyncOnline); 
+								$.mobile.hidePageLoadingMsg();
+							},
+							success: function(message){
+								if(message){
+									alert(libLang.synced);
+									$.mobile.hidePageLoadingMsg();
+								};
+							}
+						});
+						
+					});
+				});
+			</script>
+      	</ul>
+	</div> 
+    
+	<div data-role="footer" class="footer">
+        <h4><a href="http://thelittlelibrary.com">thelittlelibrary.com</a></h4> 
+    </div>
+</div>
+</body>
+</html>

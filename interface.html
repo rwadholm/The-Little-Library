@@ -4,6 +4,7 @@
 <meta charset="utf-8"> 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Little Library</title>
+<link rel="icon" type="image/png" href="../../_design/takeout-settings.jnlp/icon.png" />
 <link rel="stylesheet" href="jqm.css" />
 <script type="text/javascript" src="json2.js"></script>
 <script type="text/javascript" src="sha1.js"></script>
@@ -42,6 +43,23 @@
         <br />
         <br />
         <hr />
+        
+        <h3 class="deleteLang">Delete Language</h3>
+    	<form class="deleteLanguageForm" method="post" action="" enctype="multipart/form-data">
+            <div data-role="fieldcontain">
+                <label for="deleteLanguage" class="language">Interface Language:</label>
+                <select name="deleteLanguage" id="deleteLanguage">
+                    <option>&nbsp;</option>
+                </select>
+                <span class="deleteBtn"><input data-inline="true" type="submit" data-theme="b" class="delete" value="Delete" /></span>
+            </div>
+        </form>
+        <br />
+        <br />
+        <br />
+        <hr />
+        
+        
         <h3 class="changeLangText">Change Current Language Text</h3>
         <p class="languageInstructions"><strong>Instructions:</strong> To update or translate any text used in the interface, change the language title and modify any or all of the fields below, then click submit at the bottom of the page. This will not overwrite any previous default language files, it will create a new language file for the interface to use.</p> <br />
 	</div> 

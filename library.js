@@ -204,98 +204,110 @@ jQuery.fn.categoryShow = function() {
 
 
 // Category page list of items
-jQuery.fn.listShow = function(category) {
+jQuery.fn.listShow = function(category, libURL, local) {
 	var categoryName = category;
 	
-	if(category == "books") {
-		$('#library h1').text(libLang.books);
-	}
-	if(category == "videos") {
-		$('#library h1').text(libLang.videos);
-	}
-	if(category == "audio") {
-		$('#library h1').text(libLang.audio);
-	}
-	if(category == "documents") {
-		$('#library h1').text(libLang.documents);
-	}
-	if(category == "pictures") {
-		$('#library h1').text(libLang.pictures);
-	}
-	if(category == "notes") {
-		$('#library h1').text(libLang.notes);
-	}
-	if(category == "courses") {
-		$('#library h1').text(libLang.courses);
-	}
+	$('h1').text(libLang[category]);
+	
 	
 	// Get JSON file
-	$.getJSON('/'+ homeURL +'/_design/library/_view/'+ categoryName +'?callback=', function(categoryData) {
-		if (categoryData.rows == '') {
-		
-			$('ul.'+ categoryName +'List').append('');
-		}
-		else {
-			// List each item in the library category
-			$.each(categoryData.rows, function(cat, singleItem){
-				
-				var itemDate = '';
-				if (singleItem.key.date != ''){
-					itemDate = ('('+ singleItem.key.date +')');
-				}
-				
-				fileURL = '';
-				settingsURL = 'settings.html?id='+ singleItem.key._id +'&amp;type='+ singleItem.key.type;
-				
-				// Get the first filename by iterating over attachments
-				for	(var filename in singleItem.key._attachments){
-					// Automatically make index.html the home page if it exists
-					if (filename == "index.html" || filename == "index.htm" || filename == "default.html" || filename == "default.htm"){
-						fileURL = '/'+ homeURL +'/'+ singleItem.key._id +'/'+ filename;
-						break;
+	/*$.getJSON(libURL +'/_design/library/_view/'+ categoryName +'?callback=', function(categoryData) {*/
+	if(local == false){
+		jsonUsed = "jsonp";
+	} 
+	else {
+		jsonUsed = "json";
+	}
+	
+	$.ajax({
+		type: 'GET',
+		url: libURL +'/_design/library/_view/'+ categoryName,
+		processData: true,
+		dataType: jsonUsed,
+		error: function(){
+			alert('What happened?');
+		},
+		success: function(categoryData){
+			if (categoryData.rows == '') {
+			
+				$('ul.'+ categoryName +'List').append('');
+			}
+			else {
+				// List each item in the library category
+				$.each(categoryData.rows, function(cat, singleItem){
+					
+					var itemDate = '',
+						fileURL = '';
+					
+					// Get the file extension of the current attachment
+					function getFileExtension(newFiles) {
+						return newFiles.split('.').pop();
+					};
+					
+					
+					if (singleItem.key.date != ''){
+						itemDate = ('('+ singleItem.key.date +')');
 					}
-				};
-				
-				// If there is no index page, make a link to the last attachment if it exists
-				if (!fileURL || fileURL == '' || fileURL == null || fileURL == 'undefined'){
+					
+					settingsURL = libURL +'/_design/library/settings.html?id='+ singleItem.key._id +'&amp;type='+ singleItem.key.type;
+					
+					// Get the first filename by iterating over attachments
 					for	(var filename in singleItem.key._attachments){
-						fileURL = '/'+ homeURL +'/'+ singleItem.key._id +'/'+ filename;
-						break;
+						// Automatically make index.html the home page if it exists
+						if (filename == "default.htm" || filename == "default.html" || filename == "index.htm" || filename == "index.html"){
+							if (!local || local == false){
+								fileURL = libURL +'/'+ singleItem.key._id +'/'+ filename;
+							}
+							else {
+								fileURL = 'wrapper.html?name='+ singleItem.key.title +'&amp;url='+ libURL +'/'+ singleItem.key._id +'&amp;path='+ filename;
+							}
+							break;
+						}
+					};
+					
+					// If there is no index page, make a link to the last attachment if it exists
+					if (!fileURL || fileURL == '' || fileURL == null || fileURL == 'undefined'){
+						for	(var filename in singleItem.key._attachments){
+							fileURL = libURL +'/'+ singleItem.key._id +'/'+ filename;
+							break;
+						}
+						
+						if (local && local == true){
+							// If there are no attachments, open the settings page
+							if (!filename || filename == '' || filename == null || filename == 'undefined'){
+								//fileURL = settingsURL;
+								fileURL = "_show/details/"+ singleItem.key._id;
+							}
+						}
+						else{
+							libLang.settings = libLang.get;	
+						}
 					}
 					
-					// If there are no attachments, open the settings page
-					if (!filename || filename == '' || filename == null || filename == 'undefined'){
-						fileURL = settingsURL;
-					}
-				}
-				
-				
-				// Create a thumbnail for items that have images
-				itemThumb = '';
-				// File formats to expect for thumbnails
-				imageArray = {'jpg':'jpg','gif':'gif','png':'png','jpeg':'jpeg','JPG':'JPG','GIF':'GIF','PNG':'PNG','JPEG':'JPEG','BMP':'BMP'}; 
-				// Get the file extension of the current attachment
-				function getFileExtension(newFiles) {
-					return newFiles.split('.').pop();
-				};
-				// Iterate through the attachments and create a thumbnail of the last image
-				for(var filename in singleItem.key._attachments){ 
-					newFile = getFileExtension(filename); 
 					
-					if(imageArray[newFile]){
-						itemThumb = '<img src="/'+ homeURL +'/'+ singleItem.key._id +'/'+ filename +'" />';
-						break;
-					}
-				};
-				
-				// Create the html for each item in the category
-				$('ul.listedItems').append('<li><a href="'+ fileURL +'" class="itemURL" rel="external">'+ itemThumb +'<h3 class="itemTitle">'+ (singleItem.key.title).replace(/(<([^>]+)>)/ig,"") +'</h3><p class="itemDetails"><strong>'+ (singleItem.key.author).replace(/(<([^>]+)>)/ig,"") +'</strong> '+ (itemDate).replace(/(<([^>]+)>)/ig,"") +'<br />'+ (singleItem.key.description).replace(/(<([^>]+)>)/ig,"") +'</p></a><a href="'+ settingsURL +'" rel="external">'+ libLang.settings +'</a></li>');
-								
-				$('ul.listedItems').listview('refresh');
-				
-			});
-		};
-		
+					// Create a thumbnail for items that have images
+					itemThumb = '';
+					// File formats to expect for thumbnails
+					imageArray = {'jpg':'jpg','gif':'gif','png':'png','jpeg':'jpeg','JPG':'JPG','GIF':'GIF','PNG':'PNG','JPEG':'JPEG','BMP':'BMP'}; 
+					
+					// Iterate through the attachments and create a thumbnail of the last image
+					for(var filename in singleItem.key._attachments){ 
+						newFile = getFileExtension(filename); 
+						
+						if(imageArray[newFile]){
+							itemThumb = '<img src="'+ libURL +'/'+ singleItem.key._id +'/'+ filename +'" />';
+							break;
+						}
+					};
+					
+					// Create the html for each item in the category
+					$('ul.listedItems').append('<li><a href="'+ fileURL +'" class="itemURL" rel="external">'+ itemThumb +'<h3 class="itemTitle">'+ (singleItem.key.title).replace(/(<([^>]+)>)/ig,"") +'</h3><p class="itemDetails"><strong>'+ (singleItem.key.author).replace(/(<([^>]+)>)/ig,"") +'</strong> '+ (itemDate).replace(/(<([^>]+)>)/ig,"") +'<br />'+ (singleItem.key.description).replace(/(<([^>]+)>)/ig,"") +'</p></a><a href="'+ settingsURL +'" rel="external" class="used'+ jsonUsed +'" data-library-url="'+ singleItem.key._id +'">'+ libLang.settings +'</a></li>');
+									
+					$('ul.listedItems').listview('refresh');
+					
+				});
+			};
+		}
 	});
 };
 
@@ -344,6 +356,7 @@ jQuery.fn.formShow = function(itemID) {
 			$('.settingsForm textarea#description').val(itemData.description);
 			$('.settingsForm input#date').val(itemData.date);
 			$('.settingsForm input#_rev').val(itemData._rev);
+			$('.settingsForm input#type').val(itemData.type);
 			$('.settingsForm input#filename').val(itemData.filename);
 			$('form.settingsForm').attr({"action": "/"+ homeURL + "/"+ itemData._id});
 			
@@ -382,13 +395,14 @@ jQuery.fn.formShow = function(itemID) {
 jQuery.fn.sendForm = function(itemID, itemType) {
 	
 	// Get all of the values from the form fields
-	var itemTitle = $('.settingsForm input#title').val();
-	var itemAuthor = $('.settingsForm input#author').val();
-	var itemDescription = $('.settingsForm textarea#description').val();
-	var itemDate = $('.settingsForm input#date').val();
-	var itemRev = $('.settingsForm input#_rev').val();
-	var itemDelete = $('.settingsForm input#delete:checked').val();
-	var itemFilename = $('.settingsForm input:file').val();
+	var itemTitle = $('.settingsForm input#title').val(),
+		itemAuthor = $('.settingsForm input#author').val(),
+		itemDescription = $('.settingsForm textarea#description').val(),
+		itemDate = $('.settingsForm input#date').val(),
+		itemRev = $('.settingsForm input#_rev').val(),
+		itemDelete = $('.settingsForm input#delete:checked').val(),
+		itemType = $('.settingsForm select').val(),
+		itemFilename = $('.settingsForm input:file').val(); 
 	
 	// Check for new uploaded file
 	if (itemFilename == undefined || itemFilename == ""){

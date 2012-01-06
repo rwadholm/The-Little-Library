@@ -1,0 +1,164 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1"> 
+<title>The Little Library</title>
+<link rel="icon" type="image/png" href="../../_design/takeout-settings.jnlp/icon.png" />
+<link rel="stylesheet" href="jqm.css" />
+<script type="text/javascript" src="json2.js"></script>
+<script type="text/javascript" src="sha1.js"></script>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="jquery.couch.js"></script>
+<script type="text/javascript" src="jquery.form.js"></script>
+<script type="text/javascript" src="jquery.couchapp.js"></script>
+<script type="text/javascript" src="jqm.js"></script>
+<script type="text/javascript" src="library.js"></script>
+</head>
+<body>
+<div data-role="page" id="storeLib">
+	<div data-role="header" data-theme="b">
+    	<a href="index.html" rel="external" data-rel="back" data-role="button" data-icon="arrow-l" class="backBtn">Back</a>
+    	<h1><strong>Library</strong></h1>               
+        <div class="ui-btn-right">
+        	<a href="index.html" rel="external" data-role="button" data-icon="home" data-iconpos="notext" class="homeBtn">Home</a>
+        </div>
+    </div>
+    
+  
+	<div data-role="content" class="content">
+    	
+        
+        <form id="getLibrary">
+            <div data-role="fieldcontain">
+        		<button data-theme="b" data-icon="plus" data-inline="true" class="getLibrary">Get all library items from this library</button><br />
+            	<select name="continuousRepTo" id="continuousRepTo" data-role="slider">
+                    <option value="once" class="once">Once</option>
+                    <option value="continuous" class="continuously">Continuously</option>
+                </select>
+            </div>
+        </form>
+        
+        <ul class="storeList" data-role="listview" data-inset="true">
+        
+        
+            
+            <script type="text/javascript">
+				
+				$('div#storeLib').live("pageshow", function() {  
+  					
+    				$.mobile.showPageLoadingMsg();
+					
+					var libID = $('#storeLib').getParameter('libID');
+					$('h1').text(libLang.fromTheLibrary +' '+ libID);
+					$('form#getLibrary .getLibrary span.ui-btn-text').html(libLang.getFrom +' '+ libID);
+					$('.ui-slider-label-b').text(libLang.once);
+					$('.ui-slider-label-a').text(libLang.continuously);
+					
+					
+					if ($('#storeLib ul.storeList li').text() == "" || !$('#store ul.storeList li')){
+						// Get JSON file for specific library online
+						$.ajax({
+							type: 'GET',
+							url: 'http://library.ic.tl/'+ libID +'/_design/library/',
+							processData: true,
+							dataType: 'jsonp',
+							success: function(data){
+								
+								// List each item in the library category
+								$.each(data.views, function(singleView){
+									translatedSingleView = singleView;
+									if(singleView == "books"){
+										translatedSingleView = libLang.books;
+									}
+									if(singleView == "audio"){
+										translatedSingleView = libLang.audio;
+									}
+									if(singleView == "videos"){
+										translatedSingleView = libLang.videos;
+									}
+									if(singleView == "pictures"){
+										translatedSingleView = libLang.pictures;
+									}
+									if(singleView == "documents"){
+										translatedSingleView = libLang.documents;
+									}
+									if(singleView == "notes"){
+										translatedSingleView = libLang.notes;
+									}
+									if(singleView == "courses"){
+										translatedSingleView = libLang.courses;
+									}
+									// Don't list the languages views
+									if (singleView != "languages" && singleView != "currentLang") {
+										$('ul.storeList').append('<li class="ui-li-has-count"><a href="storeItems.html?libID='+ libID +'&amp;type='+ singleView +'" rel="external" data-transition="slide">'+ translatedSingleView +'<span class="'+ singleView +'Total"></span></a></li>');
+										
+										
+										// Modified numShow
+										
+										$.ajax({
+											type: 'GET',
+											url: 'http://library.ic.tl/'+ libID +'/_design/library/_view/'+ singleView,
+											processData: true,
+											dataType: 'jsonp',
+											success: function(json){
+												$('.'+ singleView +'Total').addClass('ui-li-count ui-btn-up-c ui-btn-corner-all').html(json.total_rows);
+											}
+										});
+										
+										$('#storeLib ul.storeList').listview('refresh');
+									}
+								});
+							}			
+						});
+					}
+					
+					$.mobile.hidePageLoadingMsg();
+					
+					
+					// Replicate from entire library
+					$('#getLibrary button').live('click', function(event){
+						
+						event.preventDefault();
+						
+						$.mobile.showPageLoadingMsg();
+						
+						// Check for continuous replication or not
+						if ($('select#continuousRepTo').val() == "continuous"){
+							var continuousRep = true;
+						} else {
+							var continuousRep = false;	
+						}
+						
+						secureHome = "http://"+ homeUser +":"+ sessionStorage.getItem('current') +"@"+ window.location.host +"/"+ homeURL;
+						
+						$.ajax({
+							url: "/_replicate",
+							type: "POST",
+							data: JSON.stringify({"source": "http://"+ onlineBase +'/'+ libID, "target": secureHome, "userCtx": {"name": homeUser, "roles":["_admin", homeUser]}, "continuous":continuousRep}),
+							contentType:"application/json",
+							error: function(){
+								alert(libLang.noSyncOnline); 
+								$.mobile.hidePageLoadingMsg();
+							},
+							success: function(message){
+								if(message){
+									alert(libLang.synced);
+									$.mobile.hidePageLoadingMsg();
+								};
+							}
+						});
+					});
+				});
+			</script>
+            
+      	</ul>
+	</div> 
+    
+	<div data-role="footer" class="footer">
+        <h4><a href="http://thelittlelibrary.com">thelittlelibrary.com</a></h4> 
+    </div>
+    
+</div>
+</body>
+</html>
