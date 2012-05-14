@@ -10,7 +10,7 @@ To try it out, just go to: http://littlelibrary.tk
 
 ## More Complex Installation
 
-If you don't like easy installations and you'd rather work for it, you can install your own CouchDB and Little Library by doing the following:
+If you don't like easy installations and you'd rather work for it (or if you're on a Linux, and the above didn't work for you), you can install your own CouchDB and Little Library by doing the following:
 
 1.  Download a version of CouchDB above 1.3 from http://www.couchbase.com/downloads/ or grab the latest (>=1.1) official Apache CouchDB at http://couchdb.apache.org/downloads.html and install it.
 
