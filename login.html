@@ -187,6 +187,9 @@
 								type: "PUT",
 								data: JSON.stringify("false"),
 								contentType:"application/json",
+								error: function(errorShow){
+									console.log(errorShow);
+								},
 								success: function(response){
 									if(response){
 										
@@ -245,7 +248,6 @@
 																					success: function(response4){ 
 																						
 																						if(response4){
-																							$.mobile.pageLoading();												
 																							window.location.replace('login.html'); 
 																						};
 																					}
