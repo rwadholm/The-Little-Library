@@ -182,43 +182,52 @@
 							//$('input.login').remove();
 							
 							// Set delayed commits to "false" in the config file for added stability
+							// Set up user as database admin
 							$.ajax({
-								url: "/_config/couchdb/delayed_commits",
+								url: "/_config/admins/"+ username,
 								type: "PUT",
-								data: JSON.stringify("false"),
+								async: false,
+								data: JSON.stringify(password),
 								contentType:"application/json",
 								error: function(errorShow){
 									console.log(errorShow);
 								},
-								success: function(response){
-									if(response){
-										
-										// Change automatic logout from 10 minutes to 100 minutes
-										$.ajax({
-											url: "/_config/couch_httpd_auth/timeout",
-											type: "PUT",
-											data: JSON.stringify("60000"),
-											contentType:"application/json",
-											success: function(response1){
-												if(response1){
-													
-													// Set up user as database admin
+								success: function(response2){
+									
+									if(response2){
+									
+										$.couch.login({
+											"name": username, 
+											"password": password,
+											error: function(errorShow){
+												console.log(errorShow);
+											},
+											success: function(response3){
+												
+												if(response3){
+												
 													$.ajax({
-														url: "/_config/admins/"+ username,
+														url: "/_config/couchdb/delayed_commits",
 														type: "PUT",
-														async: false,
-														data: JSON.stringify(password),
+														data: JSON.stringify("false"),
 														contentType:"application/json",
-														success: function(response2){
-															
-															if(response2){
-															
-																$.couch.login({
-																	"name": username, 
-																	"password": password,
-																	success: function(response3){
-																		
-																		if(response3){
+														error: function(errorShow){
+															console.log(errorShow);
+														},
+														success: function(response){
+															if(response){
+																
+																// Change automatic logout from 10 minutes to 100 minutes
+																$.ajax({
+																	url: "/_config/couch_httpd_auth/timeout",
+																	type: "PUT",
+																	data: JSON.stringify("60000"),
+																	contentType:"application/json",
+																	error: function(errorShow){
+																		console.log(errorShow);
+																	},
+																	success: function(response1){
+																		if(response1){													
 																
 																			// If user has no previous library, create one
 																			if (connectOnline != "Yes"){
@@ -229,9 +238,13 @@
 																				}
 																				
 																				sessionStorage.setItem("current",password);
-																				
-																				$('.loginForm').signupForm(username, password);	
-																				
+																				var readyYet = false; 
+																				while(readyYet == false){
+																					if(sessionStorage.getItem("current") == password){
+																						$('.loginForm').signupForm(username, password);	
+																						readyYet == true;
+																					}
+																				};																				
 																			}
 																			
 																			// Else, setup user and local library, and replicate with specified online library
