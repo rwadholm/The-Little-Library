@@ -9,7 +9,7 @@ $('div#interface').live("pageshow", function() {
 	$('.deleteLang').text(libLang.deleteLanguage);
 	$('.changeLang').text(libLang.changeLanguage);
 	$('.changeLangText').text(libLang.changeLanguageText);
-	$('.langInstructions').text(libLang.languageInstructions);
+	$('.languageInstructions').html(libLang.languageInstructions);
 	$('.languageForm .SubmitBtn span.ui-btn-inner').text(libLang.submitBtn);
 	$('.deleteLanguageForm .deleteBtn span.ui-btn-inner').text(libLang.deleteLabel);
 	
